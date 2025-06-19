@@ -44,6 +44,27 @@ if [ "$env_has_changes" = true ]; then
   git add .env
 fi
 
+secret_env_has_changes=false
+secret_env_backed_up=true
+cmp --silent default.env .env.secret || secret_env_has_changes=true
+if [ "$secret_env_has_changes" = true ]; then
+  echo ".env has changed from default.env.secret" 
+  cmp --silent .env.secret.huskybackup .env.secret || secret_env_backed_up=false
+  if [ "$secret_env_backed_up" = true ]; then
+    echo ".env has changes that are already backed up in a .env.secret.huskybackup. ignoring." 
+  fi
+  if [ "$secret_env_backed_up" = false ]; then
+    echo ".env has changes that aren't backed up in a .env.secret.huskybackup" 
+    echo "backing up .env.secret to .env.secret.huskybackup. Find pre-existing backups in ./backups/env" 
+    mkdir -p ./backups/env
+    [ -e .env.secret.huskybackup ] && cp --backup=numbered .env.secret.huskybackup ./backups/dockercompose/.env.huskybackup
+    cp .env.secret .env.secret.huskybackup || error_occurred=1
+  fi
+  echo "ensuring default .env.secret is maintained in repo" 
+  cp default.env.secret .env.secret || error_occurred=1
+  git add .env.secret
+fi
+
 temp_commit_created=0
 echo "committing staged changes to preserve them for the real commit"
 git commit -m 'husky - Save index' --no-verify --quiet || temp_commit_created=1
@@ -84,6 +105,11 @@ fi
 if [ -e .env.huskybackup ]; then
   echo "restoring backed up .env" 
   cp .env.huskybackup .env || error_occurred=1
+fi
+
+if [ -e .env.secret.huskybackup ]; then
+  echo "restoring backed up .env.secret" 
+  cp .env.secret.huskybackup .env.secret || error_occurred=1
 fi
 
 if [ $error_occurred -ne 0 ]; then
