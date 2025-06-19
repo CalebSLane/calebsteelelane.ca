@@ -36,12 +36,12 @@ x-security: &security
 services:
   api.web.api:
     <<: *security # secure
-    container_name: api-csl
+    container_name: api
     build:
       context: api
       dockerfile: Dockerfile
-      target: ${BACKEND_TARGET}
-    image: api-csl:latest
+      target: ${API_TARGET}
+    image: api:latest
     depends_on:
       vault.web.vault:
         condition: service_healthy
@@ -69,12 +69,12 @@ services:
 
   app.web.app:
     <<: *security # secure
-    container_name: app-csl
+    container_name: app
     build:
       context: app
       dockerfile: Dockerfile
-      target: ${FRONTEND_TARGET}
-    image: app-csl:latest
+      target: ${APP_TARGET}
+    image: app:latest
     depends_on:
       vault.web.vault:
         condition: service_healthy
