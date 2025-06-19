@@ -108,7 +108,6 @@ services:
       # - ./app/src/:/app/src:ro # dev
       # - ./app/public/:/app/public:ro # dev
       # - ./coverage/app/:/app/coverage/:rw # testcoverage
-
     logging: *local-logging
     healthcheck: *healthcheck
 
