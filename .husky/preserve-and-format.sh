@@ -46,18 +46,18 @@ fi
 
 secret_env_has_changes=false
 secret_env_backed_up=true
-cmp --silent default.env .env.secret || secret_env_has_changes=true
+cmp --silent default.env.secret .env.secret || secret_env_has_changes=true
 if [ "$secret_env_has_changes" = true ]; then
-  echo ".env has changed from default.env.secret" 
+  echo ".env.secret has changed from default.env.secret" 
   cmp --silent .env.secret.huskybackup .env.secret || secret_env_backed_up=false
   if [ "$secret_env_backed_up" = true ]; then
-    echo ".env has changes that are already backed up in a .env.secret.huskybackup. ignoring." 
+    echo ".env.secret has changes that are already backed up in a .env.secret.huskybackup. ignoring." 
   fi
   if [ "$secret_env_backed_up" = false ]; then
-    echo ".env has changes that aren't backed up in a .env.secret.huskybackup" 
-    echo "backing up .env.secret to .env.secret.huskybackup. Find pre-existing backups in ./backups/env" 
-    mkdir -p ./backups/env
-    [ -e .env.secret.huskybackup ] && cp --backup=numbered .env.secret.huskybackup ./backups/dockercompose/.env.huskybackup
+    echo ".env.secret has changes that aren't backed up in a .env.secret.huskybackup" 
+    echo "backing up .env.secret to .env.secret.huskybackup. Find pre-existing backups in ./backups/env.secret" 
+    mkdir -p ./backups/env.secret
+    [ -e .env.secret.huskybackup ] && cp --backup=numbered .env.secret.huskybackup ./backups/dockercompose/.env.secret.huskybackup
     cp .env.secret .env.secret.huskybackup || error_occurred=1
   fi
   echo "ensuring default .env.secret is maintained in repo" 
