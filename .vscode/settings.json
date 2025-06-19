@@ -1,0 +1,23 @@
+{
+  //...
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": false,
+  // Runs Prettier, then ESLint
+  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
+  "java.checkstyle.configuration": "${workspaceFolder}/api/checkstyle.xml",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+  },
+  "[dockercompose]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // "java.compile.nullAnalysis.mode": "automatic",
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+  "java.checkstyle.version": "10.21.3",
+  "[java]": {
+    // "editor.defaultFormatter": "redhat.java"
+  }
+}

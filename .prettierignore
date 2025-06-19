@@ -1,0 +1,10 @@
+**/.git
+**/node_modules
+**/target
+**/backups
+data
+certbot/www/
+certbot/letencrypt/
+**/logs
+docs/generated
+coverage

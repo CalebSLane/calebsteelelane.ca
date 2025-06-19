@@ -1,0 +1,27 @@
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  "xmlWhitespaceSensitivity": "ignore",
+
+  "plugins": ["prettier-plugin-java", "@prettier/plugin-xml"],
+  "overrides": [
+    {
+      "files": "**/*.java",
+      "options": {
+        "plugins": ["prettier-plugin-java"]
+      }
+    },
+    {
+      "files": "**/*.xml",
+      "options": {
+        "plugins": ["@prettier/plugin-xml"]
+      }
+    }
+  ]
+}

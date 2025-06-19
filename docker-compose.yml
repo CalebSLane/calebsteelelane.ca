@@ -1,0 +1,299 @@
+# version: '3.8'
+
+x-logging: &local-logging
+  driver: 'local'
+  options:
+    max-size: '20m'
+    max-file: '50'
+x-loki-logging: &loki-logging
+  driver: 'loki'
+  options:
+    max-size: '20m'
+    max-file: '50'
+    loki-url: '${LOKI_URL}'
+    loki-external-labels: 'container_name={{.Name}},hostname=${LOKI_REPORTING_NAME}'
+    loki-pipeline-stages: |
+      - multiline:
+          firstline: '^\d{4}-\d{2}-\d{2}[T ]?\d{2}:\d{2}:\d{2}.\d{3}'
+
+x-healthcheck: &healthcheck
+  test: /healthcheck.sh
+  interval: 60s
+  retries: 5
+  start_period: 20s
+  timeout: 10s
+
+x-security: &security
+  security_opt:
+    - 'no-new-privileges=true'
+  cap_drop:
+    - ALL
+  read_only: true
+  pull_policy: always
+  privileged: false
+  init: true
+
+services:
+  api.web.api:
+    <<: *security # secure
+    container_name: api-csl
+    build:
+      context: api
+      dockerfile: Dockerfile
+      target: ${BACKEND_TARGET}
+    image: api-csl:latest
+    depends_on:
+      vault.web.vault:
+        condition: service_healthy
+      auth.web.auth:
+        condition: service_healthy
+        restart: true
+      proxy:
+        condition: service_healthy
+    networks:
+      - frontend
+      - backend
+    env_file:
+      - '.env'
+      - '.env.secret'
+    volumes:
+      - type: tmpfs
+        target: /tmp/tomcat
+      # - type: tmpfs # testcoverage
+      #   target: /root/.m2 # testcoverage
+      # - ./docs/api/:/docs/:rw # testcoverage
+      # - ./coverage/api/:/coverage/:rw # testcoverage
+      - letsencrypt-data:${CERT_ROOT_PATH}:rw
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  app.web.app:
+    <<: *security # secure
+    container_name: app-csl
+    build:
+      context: app
+      dockerfile: Dockerfile
+      target: ${FRONTEND_TARGET}
+    image: app-csl:latest
+    depends_on:
+      vault.web.vault:
+        condition: service_healthy
+      proxy:
+        condition: service_healthy
+    networks:
+      - frontend
+    env_file:
+      - '.env'
+      - '.env.secret'
+    volumes:
+      # - type: tmpfs # dev
+      #   target: /tmp # dev
+      #   tmpfs: # dev
+      #     size: 10m # dev
+      #     mode: 01777 # dev
+      # - type: tmpfs # dev
+      #   target: /app/node_modules/.cache # dev
+      #   tmpfs: # dev
+      #     size: 10m # dev
+      #     mode: 01777 # dev
+      - type: tmpfs
+        target: /var/cache/nginx/
+        tmpfs:
+          size: 100m
+          mode: 01777
+      - type: tmpfs
+        target: /var/run/nginx/
+        tmpfs:
+          size: 10m
+      # - ./app/src/:/app/src:ro # dev
+      # - ./app/public/:/app/public:ro # dev
+      # - ./coverage/app/:/app/coverage/:rw # testcoverage
+
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  auth.web.auth:
+    <<: *security # secure
+    container_name: auth
+    build:
+      context: auth
+      dockerfile: Dockerfile
+      target: ${AUTH_TARGET}
+      args:
+        KC_DB_ARG: ${KC_DB}
+        #KC_DB_DRIVER_ARG: ${KC_DB_DRIVER}
+        #KC_TRANSACTION_XA_ENABLED_ARG: ${KC_TRANSACTION_XA_ENABLED}
+        #KC_FEATURES_ARG: ${KC_FEATURES}
+        #KC_FEATURES_DISABLED_ARG: ${KC_FEATURES_DISABLED}
+        #KC_HTTP_RELATIVE_PATH_ARG: ${KC_HTTP_RELATIVE_PATH}
+        #KC_HTTPS_CLIENT_AUTH_ARG: ${KC_HTTPS_CLIENT_AUTH}
+        KC_HEALTH_ENABLED_ARG: ${KC_HEALTH_ENABLED}
+        #KC_HTTP_MANAGEMENT_RELATIVE_PATH_ARG: ${KC_HTTP_MANAGEMENT_RELATIVE_PATH
+        #KC_HTTPS_MANAGEMENT_CLIENT_AUTH_ARG: ${KC_HTTPS_MANAGEMENT_CLIENT_AUTH}
+        KC_METRICS_ENABLED_ARG: ${KC_METRICS_ENABLED}
+        #KC_VAULT_ARG: ${KC_VAULT}
+        #KC_TRACING_ENABLED_ARG: ${KC_TRACING_ENABLED}
+        #KC_TRACING_JDBC_ENABLED_ARG: ${KC_TRACING_JDBC_ENABLED}
+        #KC_TRACING_SAMPLER_TYPE_ARG: ${KC_TRACING_SAMPLER_TYPE}
+        #KC_EVENT_METRICS_USER_ENABLED_ARG: ${KC_EVENT_METRICS_USER_ENABLED}
+        #KC_FIPS_MODE_ARG: ${KC_FIPS_MODE}
+    image: auth:latest
+    depends_on:
+      vault.web.vault:
+        condition: service_healthy
+      proxy:
+        condition: service_healthy
+      authdb:
+        condition: service_healthy
+        restart: true
+    networks:
+      - frontend
+      - backend
+    env_file:
+      - '.env'
+      - '.env.secret'
+    volumes:
+      - type: tmpfs
+        target: /tmp/vertx-cache
+        tmpfs:
+          size: 10m
+      - type: tmpfs
+        target: /tmp/uploads
+        tmpfs:
+          size: 10m
+      - type: tmpfs
+        target: /opt/keycloak/data/transaction-logs/ShadowNoFileLockStore/defaultStore/
+        tmpfs:
+          size: 10m
+      - letsencrypt-data:${CERT_ROOT_PATH}:ro
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  authdb:
+    <<: *security # secure
+    container_name: authdb
+    build:
+      context: authdb
+      dockerfile: Dockerfile
+      target: ${AUTHDB_TARGET}
+    image: authdb:latest
+    depends_on:
+      vault.web.vault:
+        condition: service_healthy
+      proxy:
+        condition: service_healthy
+    networks:
+      - backend
+    env_file:
+      - '.env'
+      - '.env.secret'
+    volumes:
+      - type: tmpfs
+        target: /run/postgresql/
+        tmpfs:
+          size: 10m
+      - type: tmpfs
+        target: /tmp/
+        tmpfs:
+          size: 10m
+      - authdb-data:/var/lib/postgresql/data:rw
+      - letsencrypt-data:${CERT_ROOT_PATH}:ro
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  vault.web.vault:
+    <<: *security # secure
+    container_name: vault
+    build:
+      context: vault
+      dockerfile: Dockerfile
+      target: ${VAULT_TARGET}
+    image: vault:latest
+    networks:
+      - frontend
+      - backend
+    env_file: '.env'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - vault-data:/vault/data:rw
+      - vault-init-data:/vault/init-data:rw
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  proxy:
+    <<: *security # secure
+    container_name: proxy
+    build:
+      context: proxy
+      dockerfile: Dockerfile
+      target: ${PROXY_TARGET}
+    image: proxy:latest
+    ports:
+      - ${NGINX_HTTP_PORT}:80
+      - ${NGINX_HTTPS_PORT}:443
+    networks:
+      frontend:
+        aliases:
+          - proxy.web.${PUBLIC_SERVER_DOMAIN}
+          - app.web.${PUBLIC_SERVER_DOMAIN}
+      backend:
+        aliases:
+          - api.web.${PUBLIC_SERVER_DOMAIN}
+          - auth.web.${PUBLIC_SERVER_DOMAIN}
+          - vault.web.${PUBLIC_SERVER_DOMAIN}
+    env_file: '.env'
+    volumes:
+      - type: tmpfs
+        target: /var/cache/nginx/
+        tmpfs:
+          size: 100m
+          mode: 01777
+      - type: tmpfs
+        target: /var/run/nginx/
+        tmpfs:
+          size: 10m
+      - proxy-config-data:/etc/nginx/conf.d:rw
+      - certbot-data:${CERTBOT_DATA_PATH}:ro
+      - letsencrypt-data:${CERT_ROOT_PATH}:ro
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  certbot:
+    <<: *security # secure
+    container_name: certbot
+    build:
+      context: certbot
+      dockerfile: Dockerfile
+      target: ${CERTBOT_TARGET}
+    image: certbot:latest
+    networks:
+      - backend
+    env_file: '.env'
+    volumes:
+      - type: tmpfs
+        target: /tmp
+      - type: tmpfs
+        target: /certbot/temp/
+      - type: tmpfs
+        target: /var/log/letsencrypt
+      - certbot-data:${CERTBOT_DATA_PATH}:rw
+      - letsencrypt-data:${CERT_ROOT_PATH}:rw
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+volumes:
+  authdb-data:
+  certbot-data:
+  letsencrypt-data:
+  vault-data:
+  vault-init-data:
+  proxy-config-data:

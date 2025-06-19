@@ -1,0 +1,23 @@
+server:
+  tomcat:
+    basedir: /tmp/tomcat
+
+spring:
+  application:
+    name: csl-api
+  cloud:
+    vault:
+      uri: ${PUBLIC_VAULT_WEB_ADDRESS}
+      token: ${SHARED_VAULT_TOKEN}
+      kv:
+        enabled: true
+        backend: shared
+        default-context: 'csl'
+  config:
+    import: vault://
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${PUBLIC_AUTH_WEB_ADDRESS}/realms/${PROJECT_NAME}
+          audiences: ${PROJECT_NAME}-client

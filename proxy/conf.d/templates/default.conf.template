@@ -1,0 +1,37 @@
+include ./conf.d/subdomains/*.conf;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${PUBLIC_SERVER_DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root ${CERTBOT_DATA_PATH};
+    }
+
+    location /health {
+        access_log off;
+        return 200 '{"status":"UP"}';
+        add_header Content-Type application/json;
+    }
+
+    location / {
+        return 302 ${PUBLIC_APP_WEB_ADDRESS}$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;  
+    listen [::]:443 ssl;
+    server_name ${PUBLIC_SERVER_DOMAIN};
+    ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
+    ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
+
+    location /.well-known/acme-challenge/ {
+        root ${CERTBOT_DATA_PATH};
+    }
+
+    location / {
+        return 302 ${PUBLIC_APP_WEB_ADDRESS}$request_uri;
+    }
+}

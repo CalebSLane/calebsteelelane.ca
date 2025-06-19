@@ -1,0 +1,8 @@
+**/node_modules
+**/logs
+data
+docs/generated
+coverage
+backups
+docker-compose.yml.backup
+*.huskybackup

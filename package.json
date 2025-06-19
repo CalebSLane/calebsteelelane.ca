@@ -1,0 +1,25 @@
+{
+  "name": "basic-project",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "npx eslint .",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "npx prettier . --check",
+    "prettier:fix": "npm run prettier -- --write",
+    "format": "npm run prettier:fix && npm run lint:fix",
+    "prepare": "husky install"
+  },
+  "author": "Caleb Steele-Lane",
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@prettier/plugin-xml": "^3.4.1",
+    "eslint": "^9.20.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-jest": "^28.11.0",
+    "eslint-plugin-react": "^7.37.4",
+    "globals": "^15.14.0",
+    "husky": "^8.0.0",
+    "prettier": "^3.5.0",
+    "prettier-plugin-java": "^2.6.7"
+  }
+}
