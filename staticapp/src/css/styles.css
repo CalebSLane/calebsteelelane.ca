@@ -86,7 +86,7 @@ label {
   border-radius: 5px;
 }
 
-a.pure-button-primary {
+.pure-button-primary {
   background: var(--bright-silver);
   color: var(--deep-blue);
   border-radius: 5px;
@@ -119,6 +119,13 @@ a.pure-button-primary {
   font-size: 120%;
 }
 
+.home-menu .pure-menu-list {
+  padding: 0.5em 1em;
+  color: var(--silver);
+  vertical-align: middle;
+  display: inline-block;
+}
+
 .home-menu .pure-menu-selected a,
 .home-menu .pure-menu-selected a:visited {
   color: var(--silver);
@@ -143,13 +150,16 @@ a.pure-button-primary {
 .splash-container {
   background: var(--orange);
   z-index: 1;
-  overflow: hidden;
+  overflow: scroll;
   /* The following styles are required for the "scroll-over" effect */
   width: 100%;
-  height: 88%;
+  height: 88vh;
   top: 0;
   left: 0;
   position: fixed !important;
+}
+.splash > :last-child > :last-child {
+  margin-bottom: 1em;
 }
 
 .splash {
@@ -177,6 +187,17 @@ a.pure-button-primary {
   line-height: 1em;
 }
 
+.game-zone {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--silver);
+  border: 3px solid var(--silver);
+  padding: 1em 0em;
+  font-weight: 100;
+  border-radius: 5px;
+  line-height: 1em;
+}
+
 .splash-subhead {
   color: var(--silver);
   letter-spacing: 0.05em;
@@ -189,7 +210,7 @@ a.pure-button-primary {
 .content-wrapper {
   /* These styles are required for the "scroll-over" effect */
   position: absolute;
-  top: 87%;
+  top: 88vh;
   width: 100%;
   min-height: 12%;
   z-index: 2;
@@ -229,12 +250,30 @@ a.pure-button-primary {
   color: var(--silver);
 }
 
+.ribbon a {
+  color: var(--silver);
+}
+
 /* This is the class used for the footer */
 .footer {
   background: #111;
   position: fixed;
   bottom: 0;
   width: 100%;
+}
+
+.socials {
+  padding: 1em 0;
+}
+
+.socials-icon {
+  font-size: 40px;
+  margin: 1em 1em 1em 0em;
+  color: var(--deep-blue);
+}
+
+.socials-icon:hover {
+  color: var(--magenta);
 }
 
 /*
@@ -289,4 +328,36 @@ a.pure-button-primary {
   .splash-head {
     font-size: 300%;
   }
+}
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* background-color: crimson; */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  /*  */
+  transition: background-color 0.2s ease;
+  z-index: 4;
+}
+.link-hero-of-time,
+.fairy-of-the-fountain,
+.game-item,
+.game-npc,
+.game-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* background-color: crimson; */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  /*  */
+  transition: background-color 0.2s ease;
+  z-index: 3;
+}
+
+#game-zone {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }

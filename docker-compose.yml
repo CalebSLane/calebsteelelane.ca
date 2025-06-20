@@ -298,6 +298,7 @@ services:
         target: /var/run/nginx/
         tmpfs:
           size: 10m
+          mode: 01777
       - proxy-config-data:/etc/nginx/conf.d:rw
       - certbot-data:${CERTBOT_DATA_PATH}:ro
       - letsencrypt-data:${CERT_ROOT_PATH}:ro

@@ -4,6 +4,7 @@ RUN apk add --no-cache curl
 RUN sed -i 's,user  nginx;,,' /etc/nginx/nginx.conf
 #this allows us to mount just the pid file as a tmpfs that is writeable 
 RUN sed -i 's,/var/run/nginx.pid,/var/run/nginx/nginx.pid,' /etc/nginx/nginx.conf
+RUN mkdir /var/run/nginx/ && chown -R nginx:nginx /var/run/nginx/
 #this allows us to run the container as a non-root user with fewer capabilities by using non-privileged ports
 EXPOSE 80 443
 RUN addgroup nginx_group --gid 8000
