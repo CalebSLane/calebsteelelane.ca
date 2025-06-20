@@ -3,22 +3,25 @@
 PROGRESS_ARG="--progress=${PROGRESS}"
 
 CERT_DOMAINS=(${PUBLIC_SERVER_DOMAIN})
-CERT_DOMAINS+=("auth.web.${PUBLIC_SERVER_DOMAIN}")
-CERT_DOMAINS+=("api.web.${PUBLIC_SERVER_DOMAIN}")
-CERT_DOMAINS+=("app.web.${PUBLIC_SERVER_DOMAIN}")
-CERT_DOMAINS+=("vault.web.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${AUTH_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${API_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${APP_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${STATIC_APP_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${VAULT_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
 # this is so we don't need to use localhost which confuses the containers, 
 # but allows us to use certs that cover localhost anyways
 if [ ${PUBLIC_SERVER_DOMAIN} = "host" ]; then 
 	echo "127.0.0.1 ${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
-	echo "127.0.0.1 auth.web.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
-	echo "127.0.0.1 api.web.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
-	echo "127.0.0.1 app.web.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
-	echo "127.0.0.1 vault.web.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
-	CERT_DOMAINS+=("auth.web.localhost")
-	CERT_DOMAINS+=("api.web.localhost")
-	CERT_DOMAINS+=("app.web.localhost")
-	CERT_DOMAINS+=("vault.web.localhost")
+	echo "127.0.0.1 ${AUTH_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
+	echo "127.0.0.1 ${API_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
+	echo "127.0.0.1 ${APP_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
+	echo "127.0.0.1 ${STATIC_APP_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
+	echo "127.0.0.1 ${VAULT_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}" >> /etc/hosts 
+	CERT_DOMAINS+=("${AUTH_WEB_SUBDOMAIN}.localhost")
+	CERT_DOMAINS+=("${API_WEB_SUBDOMAIN}.localhost")
+	CERT_DOMAINS+=("${APP_WEB_SUBDOMAIN}.localhost")
+	CERT_DOMAINS+=("${STATIC_APP_WEB_SUBDOMAIN}.localhost")
+	CERT_DOMAINS+=("${VAULT_WEB_SUBDOMAIN}.localhost")
 fi
 EMAIL=${EMAIL:-}
 
@@ -37,4 +40,4 @@ echo "Successfully created self-signed certs"
 docker compose ${PROGRESS_ARG} run --name init-java --rm --no-deps --build \
 	--env PUBLIC_SERVER_DOMAIN=${PUBLIC_SERVER_DOMAIN} \
 	--env CERT_ROOT_PATH=${CERT_ROOT_PATH} \
-	--entrypoint "/api-init.sh " api.web.api
+	--entrypoint "/api-init.sh " ${API_WEB_SUBDOMAIN}.api

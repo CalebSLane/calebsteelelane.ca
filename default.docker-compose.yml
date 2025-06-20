@@ -33,6 +33,29 @@ x-security: &security
   privileged: false
   init: true
 
+x-build-args: &build-args
+  PROJECT_NAME: ${PROJECT_NAME}
+  ENV: ${ENV}
+  ENABLE_GATSBY_REFRESH_ENDPOINT: ${ENABLE_GATSBY_REFRESH_ENDPOINT}
+  PUBLIC_APP_WEB_ADDRESS: ${PUBLIC_APP_WEB_ADDRESS}
+  KC_DB_ARG: ${KC_DB}
+  #KC_DB_DRIVER_ARG: ${KC_DB_DRIVER}
+  #KC_TRANSACTION_XA_ENABLED_ARG: ${KC_TRANSACTION_XA_ENABLED}
+  #KC_FEATURES_ARG: ${KC_FEATURES}
+  #KC_FEATURES_DISABLED_ARG: ${KC_FEATURES_DISABLED}
+  #KC_HTTP_RELATIVE_PATH_ARG: ${KC_HTTP_RELATIVE_PATH}
+  #KC_HTTPS_CLIENT_AUTH_ARG: ${KC_HTTPS_CLIENT_AUTH}
+  KC_HEALTH_ENABLED_ARG: ${KC_HEALTH_ENABLED}
+  #KC_HTTP_MANAGEMENT_RELATIVE_PATH_ARG: ${KC_HTTP_MANAGEMENT_RELATIVE_PATH
+  #KC_HTTPS_MANAGEMENT_CLIENT_AUTH_ARG: ${KC_HTTPS_MANAGEMENT_CLIENT_AUTH}
+  KC_METRICS_ENABLED_ARG: ${KC_METRICS_ENABLED}
+  #KC_VAULT_ARG: ${KC_VAULT}
+  #KC_TRACING_ENABLED_ARG: ${KC_TRACING_ENABLED}
+  #KC_TRACING_JDBC_ENABLED_ARG: ${KC_TRACING_JDBC_ENABLED}
+  #KC_TRACING_SAMPLER_TYPE_ARG: ${KC_TRACING_SAMPLER_TYPE}
+  #KC_EVENT_METRICS_USER_ENABLED_ARG: ${KC_EVENT_METRICS_USER_ENABLED}
+  #KC_FIPS_MODE_ARG: ${KC_FIPS_MODE}
+
 services:
   api.web.api:
     <<: *security # secure
@@ -41,6 +64,7 @@ services:
       context: api
       dockerfile: Dockerfile
       target: ${API_TARGET}
+      args: *build-args
     image: api:latest
     depends_on:
       vault.web.vault:
@@ -74,6 +98,7 @@ services:
       context: app
       dockerfile: Dockerfile
       target: ${APP_TARGET}
+      args: *build-args
     image: app:latest
     depends_on:
       vault.web.vault:
@@ -111,6 +136,39 @@ services:
     logging: *local-logging
     healthcheck: *healthcheck
 
+  staticapp.web.staticapp:
+    # <<: *security # secure
+    container_name: staticapp
+    build:
+      context: staticapp
+      dockerfile: Dockerfile
+      target: ${STATIC_APP_TARGET}
+      args: *build-args
+    image: staticapp:latest
+    depends_on:
+      vault.web.vault:
+        condition: service_healthy
+      proxy:
+        condition: service_healthy
+    networks:
+      - frontend
+    env_file:
+      - '.env'
+    volumes:
+      - type: tmpfs
+        target: /var/cache/nginx/
+        tmpfs:
+          size: 100m
+          mode: 01777
+      - type: tmpfs
+        target: /var/run/nginx/
+        tmpfs:
+          size: 10m
+      # - ./staticapp/src/:/staticapp/src:ro # dev
+      # - ./coverage/staticapp/:/staticapp/coverage/:rw # testcoverage
+    logging: *local-logging
+    healthcheck: *healthcheck
+
   auth.web.auth:
     <<: *security # secure
     container_name: auth
@@ -118,24 +176,7 @@ services:
       context: auth
       dockerfile: Dockerfile
       target: ${AUTH_TARGET}
-      args:
-        KC_DB_ARG: ${KC_DB}
-        #KC_DB_DRIVER_ARG: ${KC_DB_DRIVER}
-        #KC_TRANSACTION_XA_ENABLED_ARG: ${KC_TRANSACTION_XA_ENABLED}
-        #KC_FEATURES_ARG: ${KC_FEATURES}
-        #KC_FEATURES_DISABLED_ARG: ${KC_FEATURES_DISABLED}
-        #KC_HTTP_RELATIVE_PATH_ARG: ${KC_HTTP_RELATIVE_PATH}
-        #KC_HTTPS_CLIENT_AUTH_ARG: ${KC_HTTPS_CLIENT_AUTH}
-        KC_HEALTH_ENABLED_ARG: ${KC_HEALTH_ENABLED}
-        #KC_HTTP_MANAGEMENT_RELATIVE_PATH_ARG: ${KC_HTTP_MANAGEMENT_RELATIVE_PATH
-        #KC_HTTPS_MANAGEMENT_CLIENT_AUTH_ARG: ${KC_HTTPS_MANAGEMENT_CLIENT_AUTH}
-        KC_METRICS_ENABLED_ARG: ${KC_METRICS_ENABLED}
-        #KC_VAULT_ARG: ${KC_VAULT}
-        #KC_TRACING_ENABLED_ARG: ${KC_TRACING_ENABLED}
-        #KC_TRACING_JDBC_ENABLED_ARG: ${KC_TRACING_JDBC_ENABLED}
-        #KC_TRACING_SAMPLER_TYPE_ARG: ${KC_TRACING_SAMPLER_TYPE}
-        #KC_EVENT_METRICS_USER_ENABLED_ARG: ${KC_EVENT_METRICS_USER_ENABLED}
-        #KC_FIPS_MODE_ARG: ${KC_FIPS_MODE}
+      args: *build-args
     image: auth:latest
     depends_on:
       vault.web.vault:
@@ -175,6 +216,7 @@ services:
       context: authdb
       dockerfile: Dockerfile
       target: ${AUTHDB_TARGET}
+      args: *build-args
     image: authdb:latest
     depends_on:
       vault.web.vault:
@@ -207,6 +249,7 @@ services:
       context: vault
       dockerfile: Dockerfile
       target: ${VAULT_TARGET}
+      args: *build-args
     image: vault:latest
     networks:
       - frontend
@@ -229,6 +272,7 @@ services:
       context: proxy
       dockerfile: Dockerfile
       target: ${PROXY_TARGET}
+      args: *build-args
     image: proxy:latest
     ports:
       - ${NGINX_HTTP_PORT}:80
@@ -267,6 +311,7 @@ services:
       context: certbot
       dockerfile: Dockerfile
       target: ${CERTBOT_TARGET}
+      args: *build-args
     image: certbot:latest
     networks:
       - backend

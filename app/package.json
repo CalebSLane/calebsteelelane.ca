@@ -1,5 +1,5 @@
 {
-  "name": "${PROJECT_NAME}",
+  "name": "csl-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -33,8 +33,10 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
+    "babel-preset-react-app": "^10.1.0",
     "jest": "^27.5.1",
     "web-vitals": "^4.2.4"
   },

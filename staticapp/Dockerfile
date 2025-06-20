@@ -1,13 +1,16 @@
-FROM node:23.8.0-alpine3.21 AS setup
+FROM node:22.8.0-alpine3.20 AS setup
 RUN apk add --no-cache curl 
-WORKDIR /app
-RUN chown -R node:node /app
+WORKDIR /staticapp
+RUN chown -R node:node /staticapp
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
-COPY ./public ./public
+RUN npm install
 COPY ./src ./src
-RUN chown -R node:node /app/src/
-RUN chown -R node:node /app/public/
+COPY ./gatsby-config.ts ./gatsby-config.ts
+COPY ./tsconfig.json ./tsconfig.json
+RUN chown -R node:node /staticapp/src/
+RUN chown -R node:node /staticapp/gatsby-config.ts
+RUN chown -R node:node /staticapp/tsconfig.json
 USER node
 
 FROM setup AS build
@@ -36,9 +39,9 @@ RUN sed -i 's,user  nginx;,,' /etc/nginx/nginx.conf
 RUN sed -i 's,/var/run/nginx.pid,/var/run/nginx/nginx.pid,' /etc/nginx/nginx.conf
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
-COPY --from=build /app/build .
+COPY --from=build /staticapp/public .
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY ./app-healthcheck.sh /healthcheck.sh
+COPY ./staticapp-healthcheck.sh /healthcheck.sh
 RUN chown -R nginx:nginx /healthcheck.sh
 RUN chown -R nginx:nginx /etc/nginx/conf.d/default.conf
 #this allows us to run the container as a non-root user with fewer capabilities by using non-privileged ports
