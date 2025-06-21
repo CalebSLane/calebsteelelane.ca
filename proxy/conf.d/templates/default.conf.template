@@ -3,7 +3,7 @@ include ./conf.d/subdomains/*.conf;
 server {
     listen 80;
     listen [::]:80;
-    server_name ${PUBLIC_SERVER_DOMAIN};
+    server_name ${PUBLIC_SERVER_DOMAIN} _;
 
     location /.well-known/acme-challenge/ {
         root ${CERTBOT_DATA_PATH};
@@ -23,7 +23,7 @@ server {
 server {
     listen 443 ssl;  
     listen [::]:443 ssl;
-    server_name ${PUBLIC_SERVER_DOMAIN};
+    server_name ${PUBLIC_SERVER_DOMAIN} _;
     ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
     ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
 

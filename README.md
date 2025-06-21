@@ -51,3 +51,5 @@ healthchecks
 To get started with a dev environment run sudo ./scripts/initial-startup-dev.sh
 
 To get started with a production environment run sudo ./scripts/initial-startup.sh
+
+subsequent runs can be made with docker compose up -d

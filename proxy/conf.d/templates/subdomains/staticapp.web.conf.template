@@ -1,0 +1,36 @@
+server {
+    listen          80;
+    listen          [::]:80;
+    server_name     ${STATIC_APP_WEB_SUBDOMAIN}.*;
+
+    location /.well-known/acme-challenge/ {
+            root ${CERTBOT_DATA_PATH};
+    }
+
+    location / {
+        return 302 ${PUBLIC_STATIC_APP_WEB_ADDRESS}$request_uri;
+    }
+}
+
+server {
+    listen          443 ssl;
+    listen          [::]:443 ssl;
+    server_name     ${STATIC_APP_WEB_SUBDOMAIN}.*;
+    ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
+    ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
+
+    location /.well-known/acme-challenge/ {
+        root ${CERTBOT_DATA_PATH};
+    }
+
+    location / {
+        resolver 127.0.0.11 valid=30s;
+        set $upstream_app "${PRIVATE_STATIC_APP_WEB_ADDRESS}";
+        proxy_pass  $upstream_app;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $http_host;
+    }
+}

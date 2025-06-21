@@ -19,5 +19,6 @@
   "java.checkstyle.version": "10.21.3",
   "[java]": {
     // "editor.defaultFormatter": "redhat.java"
-  }
+  },
+  "java.compile.nullAnalysis.mode": "automatic"
 }
