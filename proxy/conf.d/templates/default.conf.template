@@ -1,8 +1,8 @@
 include ./conf.d/subdomains/*.conf;
 
 server {
-    listen 80;
-    listen [::]:80;
+    listen ${NGINX_HTTP_PORT};
+    listen [::]:${NGINX_HTTP_PORT};
     server_name ${PUBLIC_SERVER_DOMAIN} _;
 
     location /.well-known/acme-challenge/ {
@@ -21,8 +21,8 @@ server {
 }
 
 server {
-    listen 443 ssl;  
-    listen [::]:443 ssl;
+    listen ${NGINX_HTTPS_PORT} ssl;  
+    listen [::]:${NGINX_HTTPS_PORT} ssl;
     server_name ${PUBLIC_SERVER_DOMAIN} _;
     ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
     ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
