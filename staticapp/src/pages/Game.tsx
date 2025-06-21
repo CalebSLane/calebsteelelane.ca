@@ -14,22 +14,21 @@ const smallWindowThreshold = 580;
 const xSmallWindowThreshold = 300;
 
 function getWindowSize() {
-  const { innerWidth, innerHeight } = window;
-  const windowThreshold =
-    innerWidth > largeWindowThreshold
-      ? largeWindowThreshold
-      : innerWidth > mediumWindowThreshold
-        ? mediumWindowThreshold
-        : innerWidth > smallWindowThreshold
-          ? smallWindowThreshold
-          : xSmallWindowThreshold;
+  // doesn't work in production mode due to window object not being defined server side
+  // const { innerWidth, innerHeight } = window;
+  // const windowThreshold =
+  //   innerWidth > largeWindowThreshold
+  //     ? largeWindowThreshold
+  //     : innerWidth > mediumWindowThreshold
+  //       ? mediumWindowThreshold
+  //       : innerWidth > smallWindowThreshold
+  //         ? smallWindowThreshold
+  //         : xSmallWindowThreshold;
 
   const gameSize = mediumWindowThreshold;
   return {
-    innerWidth,
-    innerHeight,
     gameSize: gameSize,
-    windowThreshold: windowThreshold,
+    windowThreshold: mediumWindowThreshold,
     upperGameYAxis: (gameSize * 0.688) / 3 + 50,
     lowerGameYAxis: ((gameSize * 0.688) / 3) * 2,
     middleGameXAxis: gameSize / 2,
@@ -45,15 +44,15 @@ function getWindowSize() {
 
 const Game: React.FC = () => {
   const [windowSize, setWindowSize] = useState(getWindowSize());
-  useEffect(() => {
-    function handleWindowResize() {
-      setWindowSize(getWindowSize());
-    }
-    window.addEventListener('resize', handleWindowResize);
-    return () => {
-      window.removeEventListener('resize', handleWindowResize);
-    };
-  }, []);
+  // useEffect(() => {
+  //   function handleWindowResize() {
+  //     setWindowSize(getWindowSize());
+  //   }
+  //   window.addEventListener('resize', handleWindowResize);
+  //   return () => {
+  //     window.removeEventListener('resize', handleWindowResize);
+  //   };
+  // }, []);
 
   const defaultGameState = {
     activeItem: '',
@@ -130,6 +129,13 @@ const Game: React.FC = () => {
     });
   }
 
+  function killFairy(): void {
+    console.debug('killing fairy');
+    setGameState(draft => {
+      draft.npcs.fairy.status = 'dead';
+    });
+  }
+
   function killSage(method?: string): void {
     if (gameState.items.magicBarrier.status === 'active' && method === 'sword') {
       console.debug("can't kill sage with sword while barrier is up");
@@ -152,13 +158,6 @@ const Game: React.FC = () => {
     console.debug('enabling sage barrier');
     setGameState(draft => {
       draft.items.magicBarrier.status = 'active';
-    });
-  }
-
-  function killFairy(): void {
-    console.debug('killing fairy');
-    setGameState(draft => {
-      draft.npcs.fairy.status = 'dead';
     });
   }
 
@@ -194,16 +193,16 @@ const Game: React.FC = () => {
     });
   }
 
-  const swordCoolTimeoutRef = useRef<number | undefined>(undefined);
+  const swordCoolTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   function heatSword(): void {
     console.debug('heating sword');
     setGameState(draft => {
       draft.items.sword.status = 'redHot';
     });
-    if (swordCoolTimeoutRef.current !== undefined) {
+    if (swordCoolTimeoutRef.current !== null) {
       clearTimeout(swordCoolTimeoutRef.current); // Clear any previous cooldown
     }
-    swordCoolTimeoutRef.current = window.setTimeout(coolSword, 5 * 1000); // Cool down after 5 seconds
+    swordCoolTimeoutRef.current = setTimeout(coolSword, 5 * 1000); // Cool down after 5 seconds
   }
 
   function coolSword(): void {
@@ -466,7 +465,9 @@ const Game: React.FC = () => {
               top: gameState.npcs.fairy.location.y,
             }}
             onMouseEnter={() => {
-              gameState.activeItem === 'sword' && killFairy();
+              gameState.activeItem === 'sword' &&
+                gameState.npcs.fairy.status === 'alive' &&
+                killFairy();
             }}
           >
             <div
