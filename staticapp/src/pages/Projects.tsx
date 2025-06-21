@@ -21,7 +21,7 @@ type ImageFilesType = {
   file: FileNode;
 };
 
-const IndexPage: React.FC<PageProps> = ({ data }) => {
+const ProjectsPage: React.FC<PageProps> = ({ data }) => {
   const [gameOn, setGameOn] = useState(false);
   const developerImageData: ImageFilesType = useStaticQuery(graphql`
     query {
@@ -45,27 +45,19 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
             {gameOn && <Game />}
             {!gameOn && (
               <>
-                <p className="splash-subhead">Hello, my name is</p>
-                <h1 className="splash-head">Caleb Steele-Lane</h1>
-                <p className="splash-subhead">I am a software engineer and security consultant</p>
+                <p className="splash-subhead">welcome to </p>
+                <h1 className="splash-head">The Projects Page</h1>
+                <p className="splash-subhead">A.K.A where I brag about the things I've done</p>
               </>
             )}
-            <p>
-              <button
-                type="button"
-                className="pure-button pure-button-primary"
-                aria-label={gameOn ? 'Start "Game On"' : 'end "Game On"'}
-                onClick={() => setGameOn(!gameOn)}
-              >
-                {gameOn ? 'Stop Playing' : 'Wanna play a game?'}
-              </button>
-            </p>
           </div>
         </div>
 
         <div className="content-wrapper">
           <div className="content">
-            <h2 className="content-head is-center">"What experience do you have?"</h2>
+            <h2 className="content-head is-center">
+              "What are examples of projects you've done professionally?"
+            </h2>
             <div className="pure-g">
               <div className="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
                 <h3 className="content-subhead">
@@ -122,9 +114,7 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
               )}
             </div>
             <div className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
-              <h2 className="content-head content-head-ribbon">
-                "What about who you are personally?"
-              </h2>
+              <h2 className="content-head content-head-ribbon">"What about personal projects?"</h2>
 
               <p>
                 I am many things. Some of those things are listed in{' '}
@@ -191,6 +181,6 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
   );
 };
 
-export default IndexPage;
+export default ProjectsPage;
 
-export const Head: HeadFC = () => <title>CSL</title>;
+export const Head: HeadFC = () => <title>CSL - Projects</title>;
