@@ -278,6 +278,11 @@ const Game: React.FC = () => {
     return mediumWindowThreshold > windowSize.windowThreshold;
   }
 
+  function enterFlame() {
+    gameState.activeItem === 'fairy' && burnFairy();
+    gameState.activeItem === 'sword' && heatSword();
+  }
+
   return (
     <div>
       {windowIsTooSmall() && (
@@ -306,7 +311,7 @@ const Game: React.FC = () => {
             }}
             onClick={() => {}}
             onMouseEnter={() => {
-              gameState.activeItem === 'fairy' && burnFairy();
+              enterFlame();
             }}
           >
             <StaticImage
@@ -364,7 +369,7 @@ const Game: React.FC = () => {
             }}
             onClick={() => {}}
             onMouseEnter={() => {
-              gameState.activeItem === 'fairy' && burnFairy();
+              enterFlame();
             }}
           >
             <StaticImage
