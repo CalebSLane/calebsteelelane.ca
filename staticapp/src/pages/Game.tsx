@@ -31,9 +31,13 @@ function getWindowSize() {
     windowThreshold: mediumWindowThreshold,
     upperGameYAxis: (gameSize * 0.688) / 3 + 50,
     lowerGameYAxis: ((gameSize * 0.688) / 3) * 2,
+    topGameYAxis: 0,
+    bottomGameYAxis: gameSize * 0.688,
     middleGameXAxis: gameSize / 2,
-    leftGameXAxis: gameSize / 3 - 15,
-    rightGameXAxis: (gameSize / 3) * 2 + 15,
+    leftThirdGameXAxis: gameSize / 3 - 15,
+    rightThirdGameXAxis: (gameSize / 3) * 2 + 15,
+    leftGameXAxis: 0,
+    rightGameXAxis: gameSize,
 
     //can't use calulated values with gatsbyImage
     largeSpriteSize: gameSize / 13,
@@ -56,6 +60,7 @@ const Game: React.FC = () => {
 
   const defaultGameState = {
     activeItem: '',
+    activePC: '',
     items: {
       magicBarrier: {
         status: 'active',
@@ -66,13 +71,13 @@ const Game: React.FC = () => {
       },
       fire1: {
         location: {
-          x: windowSize.leftGameXAxis,
+          x: windowSize.leftThirdGameXAxis,
           y: windowSize.upperGameYAxis,
         },
       },
       fire2: {
         location: {
-          x: windowSize.rightGameXAxis,
+          x: windowSize.rightThirdGameXAxis,
           y: windowSize.upperGameYAxis,
         },
       },
@@ -105,7 +110,7 @@ const Game: React.FC = () => {
         status: 'alive',
         alignment: 'good',
         location: {
-          x: windowSize.leftGameXAxis,
+          x: windowSize.leftThirdGameXAxis,
           y: windowSize.lowerGameYAxis,
         },
       },
@@ -117,7 +122,7 @@ const Game: React.FC = () => {
         y: windowSize.upperGameYAxis - 75,
       },
     },
-    linkFollowed: false,
+    //todo add events array and add events to it for sequence of game rules
   };
   const fairyMutex = new Mutex();
   const [gameState, setGameState] = useImmer(defaultGameState);
@@ -188,9 +193,17 @@ const Game: React.FC = () => {
 
   function burnFairy(): void {
     console.debug('burning fairy');
-    setGameState(draft => {
-      draft.npcs.fairy.status = 'onFire';
-    });
+    if (gameState.npcs.fairy.status !== 'ash') {
+      setGameState(draft => {
+        draft.npcs.fairy.status = 'onFire';
+      });
+      setTimeout(() => {
+        setGameState(draft => {
+          draft.activeItem = draft.activeItem === 'fairy' ? '' : draft.activeItem;
+          draft.npcs.fairy.status = 'ash';
+        });
+      }, 1 * 1000);
+    }
   }
 
   const swordCoolTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -226,8 +239,35 @@ const Game: React.FC = () => {
   const move = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (gameRef.current !== null) {
       var rect = gameRef.current.getBoundingClientRect();
-      const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width - 20);
-      const y = Math.min(Math.max(e.clientY - rect.top, 0), rect.height - 20);
+      let x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width - 20);
+      let y = Math.min(Math.max(e.clientY - rect.top, 0), rect.height - 20);
+
+      if (
+        y > windowSize.bottomGameYAxis - 40 &&
+        x > windowSize.middleGameXAxis - 48 &&
+        x < windowSize.middleGameXAxis + 48
+      ) {
+        console.debug('leaving game');
+        leaveGame();
+        return;
+      } else {
+        if (
+          y > windowSize.bottomGameYAxis - 110 &&
+          !(x > windowSize.middleGameXAxis - 48 && x < windowSize.middleGameXAxis + 48)
+        ) {
+          y = windowSize.bottomGameYAxis - 110; // prevent mouse from going off the bottom of the game
+        }
+        if (y < windowSize.topGameYAxis + 110) {
+          y = windowSize.topGameYAxis + 110; // prevent mouse from going off the bottom of the game
+        }
+        if (x < windowSize.leftGameXAxis + 110) {
+          x = windowSize.leftGameXAxis + 110; // prevent mouse from going off the left of the game
+        }
+        if (x > windowSize.rightGameXAxis - 110) {
+          x = windowSize.rightGameXAxis - 110; // prevent mouse from going off the left of the game
+        }
+      }
+
       if (gameState.activeItem === 'sword') {
         if (gameState.items.magicBarrier.status === 'active') {
           if (!objectWithinBarrier(x, y)) {
@@ -283,6 +323,23 @@ const Game: React.FC = () => {
     gameState.activeItem === 'sword' && heatSword();
   }
 
+  function leaveGame() {
+    gameState.activeItem === 'sword' && leaveWithSword();
+    gameState.activePC === 'link' && linkExit();
+  }
+  function leaveWithSword() {
+    setGameState(draft => {
+      draft.activeItem = '';
+      draft.items.sword.status = 'stolen';
+    });
+  }
+
+  function linkExit() {
+    if (confirm('would you like to follow Link?')) {
+      window.open('/HeroOfTime', '_blank');
+    }
+  }
+
   return (
     <div>
       {windowIsTooSmall() && (
@@ -321,46 +378,49 @@ const Game: React.FC = () => {
               height={60}
             />
           </div>
-          <div
-            className="cursor"
-            style={{
-              left: gameState.items.sword.location.x,
-              top: gameState.items.sword.location.y,
-            }}
-            onClick={() => {
-              console.debug('sword clicked');
-              if (gameState.activeItem !== 'sword') {
-                console.debug('picking up the sword');
-                setGameState(draft => {
-                  draft.activeItem = 'sword';
-                });
-              } else {
-                console.debug('dropping the sword');
-                setGameState(draft => {
-                  draft.activeItem = '';
-                });
-              }
-            }}
-          >
-            <StaticImage
-              src="../images/dangerSword.png"
-              alt="It's a dangerous gift"
-              placeholder="blurred"
-              height={40}
+          {gameState.items.sword.status !== 'stolen' && (
+            <div
+              className="cursor"
               style={{
-                display: gameState.items.sword.status === 'normal' ? 'block' : 'none',
+                left: gameState.items.sword.location.x,
+                top: gameState.items.sword.location.y,
               }}
-            />
-            <StaticImage
-              src="../images/dangerSwordRedHot.png"
-              alt="It's a dangerous gift"
-              placeholder="blurred"
-              height={40}
-              style={{
-                display: gameState.items.sword.status === 'redHot' ? 'block' : 'none',
+              onClick={() => {
+                console.debug('sword clicked');
+                if (gameState.activeItem !== 'sword') {
+                  console.debug('picking up the sword');
+                  setGameState(draft => {
+                    draft.activeItem = 'sword';
+                  });
+                } else {
+                  console.debug('dropping the sword');
+                  setGameState(draft => {
+                    draft.activeItem = '';
+                  });
+                }
               }}
-            />
-          </div>
+            >
+              <StaticImage
+                src="../images/dangerSword.png"
+                alt="It's a dangerous gift"
+                placeholder="blurred"
+                height={40}
+                style={{
+                  display: gameState.items.sword.status === 'normal' ? 'block' : 'none',
+                }}
+              />
+              <StaticImage
+                src="../images/dangerSwordRedHot.png"
+                alt="It's a dangerous gift"
+                placeholder="blurred"
+                height={40}
+                style={{
+                  display: gameState.items.sword.status === 'redHot' ? 'block' : 'none',
+                }}
+              />
+            </div>
+          )}
+
           <div
             className="game-item"
             style={{
@@ -431,15 +491,13 @@ const Game: React.FC = () => {
               height={50}
             />
           </div>
-          <Link
+          <div
             className="link-hero-of-time game-npc"
             style={{
               left: gameState.npcs.link.location.x,
               top: gameState.npcs.link.location.y,
               cursor: gameState.activeItem === 'sword' ? 'none' : 'default',
             }}
-            to={gameState.npcs.link.status === 'dead' ? '/DeadLink' : '/HeroOfTime'}
-            aria-label="Hero of Time link"
             onMouseEnter={() => {
               gameState.activeItem === 'sword' && killLink();
               gameState.activeItem === 'fairy' &&
@@ -447,22 +505,30 @@ const Game: React.FC = () => {
                 reviveLink();
             }}
           >
-            <StaticImage
-              src="../images/dangerLink.png"
-              alt="the hero of time"
-              placeholder="blurred"
-              style={{ display: gameState.npcs.link.status === 'alive' ? 'block' : 'none' }}
-              height={50}
-            />
-            <StaticImage
-              src="../images/dangerLink.png"
-              alt="the hero of time - dead"
-              placeholder="blurred"
-              transformOptions={{ rotate: -90 }}
-              style={{ display: gameState.npcs.link.status === 'dead' ? 'block' : 'none' }}
-              height={50}
-            />
-          </Link>
+            {gameState.npcs.link.status === 'alive' && (
+              <StaticImage
+                src="../images/dangerLink.png"
+                alt="the hero of time"
+                placeholder="blurred"
+                height={50}
+              />
+            )}
+            {gameState.npcs.link.status === 'dead' && (
+              <Link
+                to={gameState.npcs.link.status === 'dead' ? '/DeadLink' : '/HeroOfTime'}
+                aria-label="Hero of Time link"
+              >
+                <StaticImage
+                  src="../images/dangerLink.png"
+                  alt="the hero of time - dead"
+                  placeholder="blurred"
+                  transformOptions={{ rotate: -90 }}
+                  style={{ display: gameState.npcs.link.status === 'dead' ? 'block' : 'none' }}
+                  height={50}
+                />
+              </Link>
+            )}
+          </div>
           <div
             className="cursor fairy-of-the-fountain"
             style={{
