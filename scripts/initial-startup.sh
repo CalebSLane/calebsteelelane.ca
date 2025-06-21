@@ -15,8 +15,8 @@ docker exec -it --user vault:vault \
 
 ${SCRIPT_DIR}/generate-temp-certs.sh
 
-echo "### Starting gateway ..."
-docker compose ${PROGRESS_ARG} up ${BUILD_ARG} --force-recreate -d gateway
+echo "### Starting proxy ..."
+docker compose ${PROGRESS_ARG} up ${BUILD_ARG} --force-recreate -d proxy
 echo
 
 echo "### Deleting dummy certificate for ${PUBLIC_SERVER_DOMAIN} ..."
@@ -62,5 +62,5 @@ crontab -l | grep -q "${SCRIPT_DIR}/certbot/scripts/renew_certs.sh" && echo 'cro
 	) | crontab - 
 
 echo "### Reloading nginx ..."
-docker compose ${PROGRESS_ARG} exec gateway nginx -s reload
+docker compose ${PROGRESS_ARG} exec proxy nginx -s reload
 echo
