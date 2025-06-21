@@ -3,8 +3,11 @@ RUN apk add --no-cache curl
 WORKDIR /staticapp
 RUN chown -R node:node /staticapp
 COPY package*.json ./
+RUN mkdir -p /staticapp/node_modules/
+RUN chown -R node:node /staticapp/node_modules/
+USER node
 RUN --mount=type=cache,target=/root/.npm npm ci
-RUN npm install
+USER root
 COPY ./src ./src
 COPY ./gatsby-config.ts ./gatsby-config.ts
 COPY ./tsconfig.json ./tsconfig.json
