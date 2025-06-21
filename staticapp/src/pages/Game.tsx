@@ -58,6 +58,13 @@ const Game: React.FC = () => {
   const defaultGameState = {
     activeItem: '',
     items: {
+      magicBarrier: {
+        status: 'active',
+        location: {
+          x: windowSize.middleGameXAxis,
+          y: windowSize.upperGameYAxis,
+        },
+      },
       fire1: {
         location: {
           x: windowSize.leftGameXAxis,
@@ -71,6 +78,7 @@ const Game: React.FC = () => {
         },
       },
       sword: {
+        status: 'normal',
         location: {
           x: windowSize.middleGameXAxis,
           y: windowSize.lowerGameYAxis - 50,
@@ -122,10 +130,28 @@ const Game: React.FC = () => {
     });
   }
 
-  function killSage(): void {
-    console.debug('killing sage');
+  function killSage(method?: string): void {
+    if (gameState.items.magicBarrier.status === 'active' && method === 'sword') {
+      console.debug("can't kill sage with sword while barrier is up");
+    } else {
+      console.debug('killing sage');
+      setGameState(draft => {
+        draft.npcs.sage.status = 'dead';
+      });
+    }
+  }
+
+  function disableSageBarrier(): void {
+    console.debug('disabling sage barrier');
     setGameState(draft => {
-      draft.npcs.sage.status = 'dead';
+      draft.items.magicBarrier.status = 'inactive';
+    });
+  }
+
+  function enableSageBarrier(): void {
+    console.debug('enabling sage barrier');
+    setGameState(draft => {
+      draft.items.magicBarrier.status = 'active';
     });
   }
 
@@ -168,7 +194,35 @@ const Game: React.FC = () => {
     });
   }
 
+  const swordCoolTimeoutRef = useRef<number | undefined>(undefined);
+  function heatSword(): void {
+    console.debug('heating sword');
+    setGameState(draft => {
+      draft.items.sword.status = 'redHot';
+    });
+    if (swordCoolTimeoutRef.current !== undefined) {
+      clearTimeout(swordCoolTimeoutRef.current); // Clear any previous cooldown
+    }
+    swordCoolTimeoutRef.current = window.setTimeout(coolSword, 5 * 1000); // Cool down after 5 seconds
+  }
+
+  function coolSword(): void {
+    console.debug('cooling sword');
+    setGameState(draft => {
+      draft.items.sword.status = 'normal';
+    });
+  }
+
   const gameRef = useRef<HTMLDivElement | null>(null);
+
+  const objectWithinBarrier = (x: number, y: number): boolean => {
+    return (
+      x > gameState.items.magicBarrier.location.x - 50 &&
+      x < gameState.items.magicBarrier.location.x + 50 &&
+      y > gameState.items.magicBarrier.location.y - 50 &&
+      y < gameState.items.magicBarrier.location.y + 50
+    );
+  };
 
   const move = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (gameRef.current !== null) {
@@ -176,14 +230,46 @@ const Game: React.FC = () => {
       const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width - 20);
       const y = Math.min(Math.max(e.clientY - rect.top, 0), rect.height - 20);
       if (gameState.activeItem === 'sword') {
-        setGameState(draft => {
-          draft.items.sword.location = { x: x, y: y };
-        });
+        if (gameState.items.magicBarrier.status === 'active') {
+          if (!objectWithinBarrier(x, y)) {
+            setGameState(draft => {
+              draft.items.sword.location = { x: x, y: y };
+            });
+          } else {
+            console.debug('sword cannot enter the magic barrier');
+            setGameState(draft => {
+              draft.npcs.sage.alignment = 'annoyed';
+            });
+          }
+        } else {
+          setGameState(draft => {
+            draft.items.sword.location = { x: x, y: y };
+          });
+        }
       } else if (gameState.activeItem === 'fairy') {
         if (!fairyMutex.isLocked()) {
-          setGameState(draft => {
-            draft.npcs.fairy.location = { x: x, y: y };
-          });
+          if (gameState.items.magicBarrier.status === 'active') {
+            if (objectWithinBarrier(x, y) && gameState.npcs.fairy.status === 'alive') {
+              console.debug('fairy can enter the magic barrier');
+              disableSageBarrier();
+              setGameState(draft => {
+                draft.npcs.sage.alignment = 'good';
+                draft.npcs.fairy.location = { x: x, y: y };
+              });
+            } else {
+              enableSageBarrier();
+              setGameState(draft => {
+                draft.npcs.fairy.location = { x: x, y: y };
+              });
+            }
+          } else {
+            if (!objectWithinBarrier(x, y) && gameState.npcs.sage.status === 'alive') {
+              enableSageBarrier();
+            }
+            setGameState(draft => {
+              draft.npcs.fairy.location = { x: x, y: y };
+            });
+          }
         }
       }
     }
@@ -253,10 +339,22 @@ const Game: React.FC = () => {
             }}
           >
             <StaticImage
-              src="../images/dangerCursor.png"
+              src="../images/dangerSword.png"
               alt="It's a dangerous gift"
               placeholder="blurred"
               height={40}
+              style={{
+                display: gameState.items.sword.status === 'normal' ? 'block' : 'none',
+              }}
+            />
+            <StaticImage
+              src="../images/dangerSwordRedHot.png"
+              alt="It's a dangerous gift"
+              placeholder="blurred"
+              height={40}
+              style={{
+                display: gameState.items.sword.status === 'redHot' ? 'block' : 'none',
+              }}
             />
           </div>
           <div
@@ -286,6 +384,7 @@ const Game: React.FC = () => {
             onClick={() => {}}
             onMouseEnter={() => {
               gameState.activeItem === 'fairy' && burnFairy();
+              gameState.activeItem === 'sword' && heatSword();
             }}
           >
             <StaticImage
@@ -305,9 +404,10 @@ const Game: React.FC = () => {
             }}
             aria-label="a wise sage"
             onMouseEnter={() => {
-              gameState.activeItem === 'sword' && killSage();
+              gameState.activeItem === 'sword' && killSage('sword');
               gameState.activeItem === 'fairy' &&
                 gameState.npcs.fairy.status === 'alive' &&
+                gameState.npcs.sage.status === 'dead' &&
                 reviveSage();
             }}
           >

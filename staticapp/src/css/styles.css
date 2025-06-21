@@ -10,6 +10,7 @@
   --dark-silver: #999;
   --bright-silver: #eee;
   --onyx: #333;
+  --dark-onyx: #222;
   --blue: #399;
   --deep-blue: #369;
   --magenta: #939;
@@ -33,6 +34,10 @@ h5,
 h6,
 label {
   color: var(--deep-blue);
+}
+
+a:hover {
+  color: var(--magenta);
 }
 
 .pure-img-responsive {
@@ -209,13 +214,14 @@ label {
  */
 .content-wrapper {
   /* These styles are required for the "scroll-over" effect */
-  position: absolute;
+  position: relative;
   top: 88vh;
   width: 100%;
   min-height: 12%;
   z-index: 2;
   background: var(--silver);
   color: var(--onyx);
+  margin-bottom: 88vh;
 }
 
 /* We want to give the content area some more padding */
@@ -256,10 +262,13 @@ label {
 
 /* This is the class used for the footer */
 .footer {
-  background: #111;
-  position: fixed;
-  bottom: 0;
+  background: var(--dark-onyx);
+  color: var(--dark-silver);
   width: 100%;
+  z-index: 4;
+}
+.footer a {
+  color: var(--dark-silver);
 }
 
 .socials {
