@@ -282,12 +282,12 @@ services:
       frontend:
         aliases:
           - proxy.web.${PUBLIC_SERVER_DOMAIN}
-          - app.web.${PUBLIC_SERVER_DOMAIN}
+        #  - app.web.${PUBLIC_SERVER_DOMAIN} #dev
       backend:
-        aliases:
-          - api.web.${PUBLIC_SERVER_DOMAIN}
-          - auth.web.${PUBLIC_SERVER_DOMAIN}
-          - vault.web.${PUBLIC_SERVER_DOMAIN}
+        #aliases:
+        #  - api.web.${PUBLIC_SERVER_DOMAIN} #dev
+        #  - auth.web.${PUBLIC_SERVER_DOMAIN} #dev
+        #  - vault.web.${PUBLIC_SERVER_DOMAIN} #dev
     env_file: '.env'
     volumes:
       - type: tmpfs
