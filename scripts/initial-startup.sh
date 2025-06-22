@@ -62,15 +62,15 @@ docker compose ${PROGRESS_ARG} run ${BUILD_ARG} --rm --entrypoint "\
     --agree-tos" certbot
 echo
 
-echo "### Adding cron job for certificate renewal ..."
-crontab -l | grep -q "${SCRIPT_DIR}/certbot/scripts/renew_certs.sh" && echo 'crontab task already exists' ||
-	(	crontab -l 2>/dev/null || true
-		echo "0 0 * * * ${SCRIPT_DIR}/certbot/scripts/renew_certs.sh --webroot -w ${CERTBOT_DATA_PATH} ${STAGING_ARG} ${EMAIL_ARG} ${DOMAIN_ARGS} --rsa-key-size ${CERT_RSA_KEY_SIZE}"
-	) | crontab - 
-
 echo "### Reloading nginx ..."
 docker compose ${PROGRESS_ARG} exec proxy nginx -s reload
 echo
 
 echo "Bringing up all containers ..."
 docker compose ${PROGRESS_ARG} up -d ${BUILD_ARG}
+
+echo "### Adding cron job for certificate renewal ..."
+crontab -l | grep -q "${SCRIPT_DIR}/certbot/scripts/renew_certs.sh" && echo 'crontab task already exists' ||
+	(	crontab -l 2>/dev/null || true
+		echo "0 0 * * * ${SCRIPT_DIR}/certbot/scripts/renew_certs.sh --webroot -w ${CERTBOT_DATA_PATH} ${STAGING_ARG} ${EMAIL_ARG} ${DOMAIN_ARGS} --rsa-key-size ${CERT_RSA_KEY_SIZE}"
+	) | crontab - 
