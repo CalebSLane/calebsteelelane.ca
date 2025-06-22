@@ -6,7 +6,7 @@ RUN sed -i 's,user  nginx;,,' /etc/nginx/nginx.conf
 RUN sed -i 's,/var/run/nginx.pid,/var/run/nginx/nginx.pid,' /etc/nginx/nginx.conf
 RUN mkdir /var/run/nginx/ && chown -R nginx:nginx /var/run/nginx/
 #this allows us to run the container as a non-root user with fewer capabilities by using non-privileged ports
-EXPOSE ${NGINX_HTTP_PORT} ${NGINX_HTTPS_PORT}
+EXPOSE 8080 8443
 RUN addgroup nginx_group --gid 8000
 RUN adduser -D nginx_user nginx_group
 RUN mkdir -p "/var/www/certbot" \
