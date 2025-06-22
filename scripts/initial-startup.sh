@@ -8,6 +8,7 @@ PROGRESS_ARG="--progress=${PROGRESS}"
 if [ ${BUILD} != "true" ]; then BUILD_ARG="--build"; else BUILD_ARG=""; fi
 
 docker compose ${PROGRESS_ARG} up -d ${BUILD_ARG} vault.web.vault 
+sleep 5
 docker exec -it --user vault:vault \
 	--env-file .env.secret \
 	vault sh /vault-init.sh

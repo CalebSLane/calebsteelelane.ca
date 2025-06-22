@@ -1,6 +1,6 @@
 server {
-    listen          ${NGINX_HTTP_PORT};
-    listen          [::]:${NGINX_HTTP_PORT};
+    listen          8080;
+    listen          [::]:8080;
     server_name     ${VAULT_WEB_SUBDOMAIN}.*;
 
     location /.well-known/acme-challenge/ {
@@ -13,8 +13,8 @@ server {
 }
 
 server {
-    listen          ${NGINX_HTTPS_PORT} ssl;
-    listen          [::]:${NGINX_HTTPS_PORT} ssl;
+    listen          8443 ssl;
+    listen          [::]:8443 ssl;
     server_name     ${VAULT_WEB_SUBDOMAIN}.*;
     ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
     ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
@@ -29,7 +29,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Port ${NGINX_HTTPS_PORT};
+        proxy_set_header X-Forwarded-Port 8443;
     }
 }
 
