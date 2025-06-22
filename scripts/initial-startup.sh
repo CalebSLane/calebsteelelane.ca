@@ -50,7 +50,7 @@ case "${EMAIL}" in
 esac
 
 # Enable staging mode if needed
-if [ ${ENV} != "staging" ]; then STAGING_ARG="--staging"; else STAGING_ARG=""; fi
+if [ ${ENV} == "staging" ]; then STAGING_ARG="--staging"; else STAGING_ARG=""; fi
 
 docker compose ${PROGRESS_ARG} run ${BUILD_ARG} --rm --entrypoint "\
   certbot certonly --webroot -w ${CERTBOT_DATA_PATH} \
@@ -71,3 +71,6 @@ crontab -l | grep -q "${SCRIPT_DIR}/certbot/scripts/renew_certs.sh" && echo 'cro
 echo "### Reloading nginx ..."
 docker compose ${PROGRESS_ARG} exec proxy nginx -s reload
 echo
+
+echo "Bringing up all containers ..."
+docker compose ${PROGRESS_ARG} up -d ${BUILD_ARG}
