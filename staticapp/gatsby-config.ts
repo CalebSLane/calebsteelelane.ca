@@ -31,6 +31,14 @@ const config: GatsbyConfig = {
       },
       __key: 'images',
     },
+    {
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        name: 'documents',
+        path: './src/documents/',
+      },
+      __key: 'documents',
+    },
   ],
 };
 

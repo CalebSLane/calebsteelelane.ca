@@ -84,14 +84,16 @@ a:hover {
  * -- PURE BUTTON STYLES --
  * I want my pure-button elements to look a little different
  */
-.pure-button {
+.pure-button,
+a.pure-button {
   background-color: var(--deep-blue);
   color: var(--bright-silver);
   padding: 0.5em 2em;
   border-radius: 5px;
 }
 
-.pure-button-primary {
+.pure-button-primary,
+a.pure-button-primary {
   background: var(--bright-silver);
   color: var(--deep-blue);
   border-radius: 5px;
@@ -133,7 +135,7 @@ a:hover {
 
 .home-menu .pure-menu-selected a,
 .home-menu .pure-menu-selected a:visited {
-  color: var(--silver);
+  color: var(--blue);
 }
 
 .home-menu a {
@@ -145,7 +147,7 @@ a:hover {
 .home-menu li a:focus:visited {
   background: none;
   border: none;
-  color: var(--blue);
+  color: var(--magenta);
 }
 
 /*
@@ -374,4 +376,5 @@ a:hover {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
+  margin-top: -100px;
 }

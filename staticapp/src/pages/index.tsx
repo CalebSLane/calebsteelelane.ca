@@ -11,9 +11,8 @@ import {
   faInfinity,
   faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
-import { GatsbyImage, getImage, StaticImage } from 'gatsby-plugin-image';
+import { StaticImage } from 'gatsby-plugin-image';
 import { FileNode } from 'gatsby-plugin-image/dist/src/components/hooks';
-import Game from './Game';
 import Layout from './SplashLayout';
 
 type ImageFilesType = {
@@ -21,43 +20,32 @@ type ImageFilesType = {
 };
 
 const IndexPage: React.FC<PageProps> = ({ data }) => {
-  const [gameOn, setGameOn] = useState(false);
-  const developerImageData: ImageFilesType = useStaticQuery(graphql`
+  const files = useStaticQuery(graphql`
     query {
-      file(relativePath: { eq: "developer.jpg" }) {
-        childImageSharp {
-          gatsbyImageData(width: 300, placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
-        }
+      resume: file(relativePath: { eq: "CalebSteele-Lane-ResumeSoftware.pdf" }) {
+        publicURL
+        name
       }
     }
   `);
-
-  const developerImage = developerImageData?.file?.childImageSharp
-    ? getImage(developerImageData.file.childImageSharp)
-    : null;
 
   return (
     <main>
       <Layout>
         <div className="splash-container">
           <div className="splash">
-            {gameOn && <Game />}
-            {!gameOn && (
-              <>
-                <p className="splash-subhead">Hello, my name is</p>
-                <h1 className="splash-head">Caleb Steele-Lane</h1>
-                <p className="splash-subhead">I am a software engineer and security consultant</p>
-              </>
-            )}
+            <p className="splash-subhead">Hello, my name is</p>
+            <h1 className="splash-head">Caleb Steele-Lane</h1>
+            <p className="splash-subhead">I am a software engineer and security consultant</p>
             <p>
-              <button
-                type="button"
+              <a
                 className="pure-button pure-button-primary"
-                aria-label={gameOn ? 'Start "Game On"' : 'end "Game On"'}
-                onClick={() => setGameOn(!gameOn)}
+                aria-label="Download my resume"
+                href={files.resume.publicURL}
+                download
               >
-                {gameOn ? 'Stop Playing' : 'Wanna play a game?'}
-              </button>
+                Download Resume
+              </a>
             </p>
           </div>
         </div>
@@ -116,9 +104,12 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
 
           <div className="ribbon l-box-lrg pure-g">
             <div className="l-box-lrg is-center pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
-              {developerImage && (
-                <GatsbyImage image={developerImage} alt="Portrait of the developer" />
-              )}
+              <StaticImage
+                src="../images/developer.jpg"
+                placeholder="blurred"
+                height={300}
+                alt="Portrait of the developer"
+              />
             </div>
             <div className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
               <h2 className="content-head content-head-ribbon">

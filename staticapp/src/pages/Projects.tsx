@@ -39,6 +39,16 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
                 </p>
               </>
             )}
+            <p>
+              <button
+                type="button"
+                className="pure-button pure-button-primary"
+                aria-label={gameOn ? 'Start "Game On"' : 'end "Game On"'}
+                onClick={() => setGameOn(!gameOn)}
+              >
+                {gameOn ? 'Stop Playing' : 'Wanna play a game?'}
+              </button>
+            </p>
           </div>
         </div>
 

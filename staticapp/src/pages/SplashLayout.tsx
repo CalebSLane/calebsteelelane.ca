@@ -9,7 +9,7 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
     <main>
       <div id="home" className="header">
         <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-          <a className="pure-menu-heading" href="#">
+          <a className="pure-menu-heading" href="/">
             <StaticImage
               src="../images/logo.png"
               alt="CSL Logo"
@@ -20,12 +20,16 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
             />
           </a>
           <ul className="pure-menu-list">
-            <li className="pure-menu-item pure-menu-selected">
+            <li
+              className={`pure-menu-item ${window.location.pathname === '/' ? 'pure-menu-selected' : ''}`}
+            >
               <Link to="/" className="pure-menu-link">
                 Home
               </Link>
             </li>
-            <li className="pure-menu-item">
+            <li
+              className={`pure-menu-item ${window.location.pathname === '/Projects/' ? 'pure-menu-selected' : ''}`}
+            >
               <Link to="/Projects" className="pure-menu-link">
                 Projects
               </Link>
