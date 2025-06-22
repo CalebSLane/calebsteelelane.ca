@@ -14,7 +14,7 @@ server {
     }
 
     location / {
-        return 302 ${PUBLIC_STATIC_APP_WEB_ADDRESS}$request_uri;
+        return 302 https://$host$request_uri;
     }
 }
 
