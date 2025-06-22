@@ -14,20 +14,11 @@ const smallWindowThreshold = 580;
 const xSmallWindowThreshold = 300;
 
 function getWindowSize() {
-  // doesn't work in production mode due to window object not being defined server side
-  // const { innerWidth, innerHeight } = window;
-  // const windowThreshold =
-  //   innerWidth > largeWindowThreshold
-  //     ? largeWindowThreshold
-  //     : innerWidth > mediumWindowThreshold
-  //       ? mediumWindowThreshold
-  //       : innerWidth > smallWindowThreshold
-  //         ? smallWindowThreshold
-  //         : xSmallWindowThreshold;
-
   const gameSize = mediumWindowThreshold;
-  return {
+  const windowSize = {
     gameSize: gameSize,
+    innerWidth: 0,
+    innerHeight: 0,
     windowThreshold: mediumWindowThreshold,
     upperGameYAxis: (gameSize * 0.688) / 3 + 50,
     lowerGameYAxis: ((gameSize * 0.688) / 3) * 2,
@@ -44,19 +35,37 @@ function getWindowSize() {
     mediumSpriteSize: gameSize / 15,
     smallSpriteSize: gameSize / 20,
   };
+  if (typeof window !== 'undefined') {
+    const { innerWidth, innerHeight } = window;
+    const windowThreshold =
+      innerWidth > largeWindowThreshold
+        ? largeWindowThreshold
+        : innerWidth > mediumWindowThreshold
+          ? mediumWindowThreshold
+          : innerWidth > smallWindowThreshold
+            ? smallWindowThreshold
+            : xSmallWindowThreshold;
+
+    windowSize.windowThreshold = windowThreshold;
+    windowSize.innerWidth = innerWidth;
+    windowSize.innerHeight = innerHeight;
+  }
+  return windowSize;
 }
 
 const Game: React.FC = () => {
   const [windowSize, setWindowSize] = useState(getWindowSize());
-  // useEffect(() => {
-  //   function handleWindowResize() {
-  //     setWindowSize(getWindowSize());
-  //   }
-  //   window.addEventListener('resize', handleWindowResize);
-  //   return () => {
-  //     window.removeEventListener('resize', handleWindowResize);
-  //   };
-  // }, []);
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowSize(getWindowSize());
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleWindowResize);
+      return () => {
+        window.removeEventListener('resize', handleWindowResize);
+      };
+    }
+  }, []);
 
   const defaultGameState = {
     activeItem: '',
