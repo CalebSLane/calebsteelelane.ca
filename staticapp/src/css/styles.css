@@ -221,7 +221,6 @@ a:hover {
   z-index: 2;
   background: var(--silver);
   color: var(--onyx);
-  margin-bottom: 88vh;
 }
 
 /* We want to give the content area some more padding */
@@ -235,6 +234,10 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 2em 0 1em;
+}
+
+.content-head a {
+  text-decoration: none;
 }
 
 /* This is a modifier class used when the content-head is inside a ribbon */
@@ -262,6 +265,8 @@ a:hover {
 
 /* This is the class used for the footer */
 .footer {
+  margin-top: 87vh;
+  position: relative;
   background: var(--dark-onyx);
   color: var(--dark-silver);
   width: 100%;
@@ -272,12 +277,12 @@ a:hover {
 }
 
 .socials {
-  padding: 1em 0;
+  margin: 0em 0;
 }
 
 .socials-icon {
-  font-size: 40px;
-  margin: 1em 1em 1em 0em;
+  font-size: 30px;
+  margin: 0em 0.5em 0em 0.5em;
   color: var(--deep-blue);
 }
 

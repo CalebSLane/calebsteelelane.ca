@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Link, graphql, useStaticQuery } from 'gatsby';
 import type { HeadFC, PageProps } from 'gatsby';
 import 'purecss/build/pure-min.css';
@@ -13,9 +13,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { GatsbyImage, getImage, StaticImage } from 'gatsby-plugin-image';
 import { FileNode } from 'gatsby-plugin-image/dist/src/components/hooks';
-import { faGithub, faInstagram, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import Game from './Game';
-import Layout from './Layout';
+import Layout from './SplashLayout';
 
 type ImageFilesType = {
   file: FileNode;
@@ -135,54 +134,6 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
                 haven't modeled yet, but I am open to offers.
               </p>
               <p>I am also a self proclaimed comedian.</p>
-            </div>
-          </div>
-
-          <div className="content">
-            <h2 className="content-head is-center"></h2>
-
-            <div className="pure-g">
-              <div className="l-box-lrg pure-u-1 pure-u-md-2-5"></div>
-
-              <div className="l-box-lrg pure-u-1 pure-u-md-3-5">
-                <h4>Contact Me</h4>
-                <p>
-                  If you have any questions, comments, feel free to reach out to me via email at{' '}
-                  <a href="mailto:caleb@cleeb.ca">caleb@cleeb.ca</a> or via the below social media
-                  links
-                </p>
-                <p className="socials">
-                  <a
-                    href="https://www.linkedin.com/in/calebsteele-lane"
-                    target="_blank"
-                    aria-label="LinkedIn link"
-                  >
-                    <FontAwesomeIcon
-                      className="socials-icon"
-                      icon={faLinkedin}
-                      aria-label="LinkedIn icon"
-                    />
-                  </a>
-                  <a href="https://github.com/CalebSLane" target="_blank" aria-label="GitHub link">
-                    <FontAwesomeIcon
-                      className="socials-icon"
-                      icon={faGithub}
-                      aria-label="GitHub icon"
-                    />
-                  </a>
-                  <a
-                    href="https://www.instagram.com/calebslane/"
-                    target="_blank"
-                    aria-label="Instagram link"
-                  >
-                    <FontAwesomeIcon
-                      className="socials-icon"
-                      icon={faInstagram}
-                      aria-label="Instagram icon"
-                    />
-                  </a>
-                </p>
-              </div>
             </div>
           </div>
         </div>
