@@ -5,7 +5,7 @@ set +a
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 PROGRESS_ARG="--progress=${PROGRESS}"
 # Enable build mode if needed
-if [ ${BUILD} != "true" ]; then BUILD_ARG="--build"; else BUILD_ARG=""; fi
+if [ ${BUILD} = "true" ]; then BUILD_ARG="--build"; else BUILD_ARG=""; fi
 
 docker compose ${PROGRESS_ARG} up -d ${BUILD_ARG} vault.web.vault 
 sleep 5
@@ -50,7 +50,7 @@ case "${EMAIL}" in
 esac
 
 # Enable staging mode if needed
-if [ ${ENV} == "staging" ]; then STAGING_ARG="--staging"; else STAGING_ARG=""; fi
+if [ ${ENV} = "staging" ]; then STAGING_ARG="--staging"; else STAGING_ARG=""; fi
 
 docker compose ${PROGRESS_ARG} run ${BUILD_ARG} --rm --entrypoint "\
   certbot certonly --webroot -w ${CERTBOT_DATA_PATH} \
