@@ -2,6 +2,7 @@
 VAULT_ADDR=${PRIVATE_VAULT_WEB_ADDRESS}
 export VAULT_ADDR
 vault operator init -key-shares=1 -key-threshold=1 -format=table > /vault/init-data/init-keys.txt
+sleep 10
 ROOT_VAULT_TOKEN=$(grep 'Initial Root Token' /vault/init-data/init-keys.txt | sed -r 's/^[^:]*: (.*)$/\1/')
 /vault-unseal.sh
 # VAULT_CACERT="${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/cert.pem"
