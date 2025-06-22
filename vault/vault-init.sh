@@ -5,8 +5,7 @@ INIT_STATUS=$(vault operator init -status)
 if [ "${INIT_STATUS}" = "Vault is initialized" ]; then
     echo "Vault is already initialized. Skipping initialization."
 else
-    vault operator init -key-shares=1 -key-threshold=1 -format=table -status > /vault/init-data/init-keys.txt
-    sleep 10
+    vault operator init -key-shares=1 -key-threshold=1 -format=table > /vault/init-data/init-keys.txt
     ROOT_VAULT_TOKEN=$(grep 'Initial Root Token' /vault/init-data/init-keys.txt | sed -r 's/^[^:]*: (.*)$/\1/')
     /vault-unseal.sh
     # VAULT_CACERT="${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/cert.pem"
