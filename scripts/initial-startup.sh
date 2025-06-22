@@ -14,7 +14,7 @@ docker exec -it --user vault:vault \
 
 
 ${SCRIPT_DIR}/generate-temp-certs.sh
-
+ 
 echo "### Starting proxy ..."
 docker compose ${PROGRESS_ARG} up ${BUILD_ARG} --force-recreate -d proxy
 echo
@@ -30,6 +30,13 @@ echo "Removed dummy certificate for ${PUBLIC_SERVER_DOMAIN}"
 echo
 
 echo "### Requesting Let's Encrypt certificate for ${PUBLIC_SERVER_DOMAIN} ..."
+CERT_DOMAINS=(${PUBLIC_SERVER_DOMAIN})
+CERT_DOMAINS+=("${AUTH_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${API_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${APP_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${STATIC_APP_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("${VAULT_WEB_SUBDOMAIN}.${PUBLIC_SERVER_DOMAIN}")
+CERT_DOMAINS+=("*.${PUBLIC_SERVER_DOMAIN}")
 DOMAIN_ARGS=""
 for DOMAIN in "${CERT_DOMAINS[@]}"; do
 	DOMAIN_ARGS+="-d ${DOMAIN} "
