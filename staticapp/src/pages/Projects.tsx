@@ -59,13 +59,12 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
         </div>
         <div className="content ribbon l-box-lrg pure-g">
           <div className="l-box-lrg is-center pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
-            <iframe
-              src="/"
-              title="this website"
-              height="295"
-              width="350"
-              style={{ border: 'none', pointerEvents: 'none' }}
-            ></iframe>{' '}
+            <StaticImage
+              src="../images/thisWebsite.png"
+              alt="this website image"
+              placeholder="blurred"
+              height={300}
+            />
           </div>
           <div className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
             <h2 className="content-head content-head-ribbon">
