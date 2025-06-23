@@ -66,6 +66,14 @@ const Game: React.FC = () => {
     }
   }, []);
 
+  let defaultSwordState = 'stolen';
+  let defaultGunState = 'available';
+  if (matchMedia('(pointer:fine)').matches) {
+    defaultSwordState = 'normal';
+    defaultGunState = 'unavailable';
+    // Device has a mouse
+  }
+
   const defaultGameState = {
     activeItem: '',
     activePC: '',
@@ -92,14 +100,14 @@ const Game: React.FC = () => {
         },
       },
       sword: {
-        status: 'normal',
+        status: defaultSwordState,
         location: {
           x: windowSize.middleGameXAxis,
           y: windowSize.lowerGameYAxis - 50,
         },
       },
       gun: {
-        status: 'unavailable',
+        status: defaultGunState,
         location: {
           x: windowSize.middleGameXAxis,
           y: windowSize.lowerGameYAxis - 50,
