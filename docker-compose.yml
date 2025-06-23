@@ -277,7 +277,7 @@ services:
     # image: proxy:latest
     ports:
       - ${NGINX_HTTP_PORT}:8080
-      - 8443:8443
+      - ${NGINX_HTTPS_PORT}:8443
     networks:
       frontend:
         aliases:
