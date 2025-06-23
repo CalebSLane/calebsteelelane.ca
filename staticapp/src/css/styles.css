@@ -12,9 +12,9 @@
   --onyx: #333;
   --dark-onyx: #222;
   --darker-onyx: #111;
-  --blue: #399;
-  --bright-blue: #6cc;
-  --brighter-blue: #9ff;
+  --blue: #366;
+  --bright-blue: #699;
+  --brighter-blue: #9cc;
   --deep-blue: #369;
   --deeper-blue: #036;
   --bright-magenta: #c6c;
@@ -148,7 +148,7 @@ a.pure-button-primary {
 
 .home-menu .pure-menu-selected a,
 .home-menu .pure-menu-selected a:visited {
-  color: var(--bright-blue);
+  color: var(--brighter-blue);
 }
 
 .home-menu a {
@@ -265,7 +265,7 @@ a.pure-button-primary {
   color: var(--deep-magenta);
 }
 .ribbon .content-subhead {
-  color: var(--bright-blue);
+  color: var(--brighter-blue);
 }
 .content-subhead i {
   margin-right: 7px;
