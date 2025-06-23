@@ -14,8 +14,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { GatsbyImage, getImage, StaticImage } from 'gatsby-plugin-image';
 import { FileNode } from 'gatsby-plugin-image/dist/src/components/hooks';
-import Game from './Game';
-import Layout from './SplashLayout';
+import Game from '../components/game';
+import Layout from '../components/splashLayout';
+import { SEO } from '../components/seo';
 
 type ImageFilesType = {
   file: FileNode;
@@ -228,4 +229,4 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
 
 export default ProjectsPage;
 
-export const Head: HeadFC = () => <title>CSL - Projects</title>;
+export const Head: HeadFC = () => <SEO />;

@@ -14,8 +14,8 @@ import {
 import { GatsbyImage, getImage, StaticImage } from 'gatsby-plugin-image';
 import { FileNode } from 'gatsby-plugin-image/dist/src/components/hooks';
 import { faGithub, faInstagram, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import Game from './Game';
-import Layout from './SplashLayout';
+import Game from '../components/game';
+import Layout from '../components/splashLayout';
 
 type ImageFilesType = {
   file: FileNode;

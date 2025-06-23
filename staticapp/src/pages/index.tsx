@@ -12,8 +12,8 @@ import {
   faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
 import { StaticImage } from 'gatsby-plugin-image';
-import { FileNode } from 'gatsby-plugin-image/dist/src/components/hooks';
-import Layout from './SplashLayout';
+import Layout from '../components/splashLayout';
+import { SEO } from '../components/seo';
 
 const IndexPage: React.FC<PageProps> = ({ data }) => {
   const files = useStaticQuery(graphql`
@@ -129,9 +129,4 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => (
-  <>
-    <title>CSL</title>
-    <html lang="en" />
-  </>
-);
+export const Head: HeadFC = ({ location, params, data, pageContext }) => <SEO />;
