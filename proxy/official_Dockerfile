@@ -13,7 +13,8 @@ RUN mkdir -p "/var/www/certbot" \
     && mkdir -p "/etc/letsencrypt" \
     && chown -R nginx_user:nginx_group "/var/www/certbot" \
     && chown -R nginx_user:nginx_group "/etc/letsencrypt"
-COPY conf.d/templates /etc/nginx/templates
+COPY conf.d/templates/default.conf.template /etc/nginx/templates/default.conf.template
+COPY conf.d/templates/subdomains /etc/nginx/templates/subdomains
 COPY proxy-healthcheck.sh /healthcheck.sh
 RUN chown -R nginx_user:nginx_group /etc/nginx/conf.d
 RUN chown -R nginx_user:nginx_group /etc/nginx/templates
