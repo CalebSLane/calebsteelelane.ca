@@ -1,6 +1,5 @@
 #!/bin/sh
 # first call is to see results in case debugging is necessary
-echo "curl -H \"X-Vault-Token: ${SHARED_VAULT_TOKEN}\" -X GET ${PUBLIC_VAULT_WEB_ADDRESS}/v1/${SHARED_VAULT_PATH}/data/${PROJECT_NAME} --cacert \"${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/cert.pem\""
 curl -H "X-Vault-Token: ${SHARED_VAULT_TOKEN}" \
     -X GET ${PUBLIC_VAULT_WEB_ADDRESS}/v1/${SHARED_VAULT_PATH}/data/${PROJECT_NAME} \
     --cacert "${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/cert.pem" 
