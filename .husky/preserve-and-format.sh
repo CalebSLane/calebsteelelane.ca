@@ -2,68 +2,50 @@
 
 error_occurred=0
 
-docker_compose_has_changes=false
-docker_compose_backed_up=true
-cmp --silent default.docker-compose.yml docker-compose.yml || docker_compose_has_changes=true
-if [ "$docker_compose_has_changes" = true ]; then
-  echo "docker-compose.yml has changed from default.docker-compose.yml" 
-  cmp --silent docker-compose.yml.huskybackup docker-compose.yml || docker_compose_backed_up=false
-  if [ "$docker_compose_backed_up" = true ]; then
-    echo "docker-compose.yml has changes that are already backed up in a docker-compose.yml.huskybackup. ignoring." 
+backup_file() {
+  has_changes=false
+  backed_up=true
+  filename=$1;
+  dirname=$2;
+  cmp --silent ${dirname}official_${filename} ${dirname}${filename} || has_changes=true
+  if [ "$has_changes" = true ]; then
+    echo "${dirname}${filename} has changed from ${dirname}official_${filename}" 
+    cmp --silent ${dirname}${filename}.huskybackup ${dirname}${filename} || backed_up=false
+    if [ "$backed_up" = true ]; then
+      echo "${dirname}${filename} has changes that are already backed up in a ${dirname}${filename}.huskybackup. ignoring." 
+    fi
+    if [ "$backed_up" = false ]; then
+      echo "${dirname}${filename} has changes that aren't backed up in a ${dirname}${filename}.huskybackup" 
+      echo "backing up ${dirname}${filename} to ${dirname}${filename}.huskybackup. Find pre-existing backups in ./backups/${dirname}${filename}" 
+      mkdir -p ./backups/${dirname}
+      [ -e ${dirname}${filename}.huskybackup ] && cp --backup=numbered ${dirname}${filename}.huskybackup ./backups/${dirname}${filename}.huskybackup
+      cp ${dirname}${filename} ${dirname}${filename}.huskybackup || error_occurred=1
+    fi
+    echo "ensuring official ${dirname}${filename} is maintained in repo" 
+    cp ${dirname}official_${filename} ${dirname}${filename} || error_occurred=1
+    git add ${dirname}${filename}
   fi
-  if [ "$docker_compose_backed_up" = false ]; then
-    echo "docker-compose.yml has changes that aren't backed up in a docker-compose.yml.huskybackup" 
-    echo "backing up docker-compose.yml to docker-compose.yml.huskybackup. Find pre-existing backups in ./backups/dockercompose" 
-    mkdir -p ./backups/dockercompose
-    [ -e docker-compose.yml.huskybackup ] && cp --backup=numbered docker-compose.yml.huskybackup ./backups/dockercompose/docker-compose.yml.huskybackup
-    cp docker-compose.yml docker-compose.yml.huskybackup || error_occurred=1
-  fi
-  echo "ensuring default docker-compose.yml is maintained in repo" 
-  cp default.docker-compose.yml docker-compose.yml || error_occurred=1
-  git add docker-compose.yml
-fi
+}
 
-env_has_changes=false
-env_backed_up=true
-cmp --silent default.env .env || env_has_changes=true
-if [ "$env_has_changes" = true ]; then
-  echo ".env has changed from default.env" 
-  cmp --silent .env.huskybackup .env || env_backed_up=false
-  if [ "$env_backed_up" = true ]; then
-    echo ".env has changes that are already backed up in a .env.huskybackup. ignoring." 
+restore_file() {
+  filename=$1;
+  dirname=$2;
+  if [ -e ${dirname}${filename}.huskybackup ]; then
+    echo "restoring backed up ${dirname}${filename}" 
+    cp ${dirname}${filename}.huskybackup ${dirname}${filename} || error_occurred=1
   fi
-  if [ "$env_backed_up" = false ]; then
-    echo ".env has changes that aren't backed up in a .env.huskybackup" 
-    echo "backing up .env to .env.huskybackup. Find pre-existing backups in ./backups/env" 
-    mkdir -p ./backups/env
-    [ -e .env.huskybackup ] && cp --backup=numbered .env.huskybackup ./backups/dockercompose/.env.huskybackup
-    cp .env .env.huskybackup || error_occurred=1
-  fi
-  echo "ensuring default .env is maintained in repo" 
-  cp default.env .env || error_occurred=1
-  git add .env
-fi
+}
 
-secret_env_has_changes=false
-secret_env_backed_up=true
-cmp --silent default.env.secret .env.secret || secret_env_has_changes=true
-if [ "$secret_env_has_changes" = true ]; then
-  echo ".env.secret has changed from default.env.secret" 
-  cmp --silent .env.secret.huskybackup .env.secret || secret_env_backed_up=false
-  if [ "$secret_env_backed_up" = true ]; then
-    echo ".env.secret has changes that are already backed up in a .env.secret.huskybackup. ignoring." 
-  fi
-  if [ "$secret_env_backed_up" = false ]; then
-    echo ".env.secret has changes that aren't backed up in a .env.secret.huskybackup" 
-    echo "backing up .env.secret to .env.secret.huskybackup. Find pre-existing backups in ./backups/env.secret" 
-    mkdir -p ./backups/env.secret
-    [ -e .env.secret.huskybackup ] && cp --backup=numbered .env.secret.huskybackup ./backups/dockercompose/.env.secret.huskybackup
-    cp .env.secret .env.secret.huskybackup || error_occurred=1
-  fi
-  echo "ensuring default .env.secret is maintained in repo" 
-  cp default.env.secret .env.secret || error_occurred=1
-  git add .env.secret
-fi
+backup_file docker-compose.yml ./
+backup_file .env ./
+backup_file .env.secret ./
+backup_file Dockerfile proxy/
+backup_file default.conf.template proxy/conf.d/templates/
+backup_file app.web.conf.template proxy/conf.d/templates/subdomains/
+backup_file api.web.conf.template proxy/conf.d/templates/subdomains/
+backup_file auth.web.conf.template proxy/conf.d/templates/subdomains/
+backup_file staticapp.web.conf.template proxy/conf.d/templates/subdomains/
+backup_file vault.web.conf.template proxy/conf.d/templates/subdomains/
 
 temp_commit_created=0
 echo "committing staged changes to preserve them for the real commit"
@@ -97,20 +79,16 @@ git stash pop --quiet || error_occurred=1
 echo "deleting temp file" 
 rm huskytemp || error_occurred=1
 
-if [ -e docker-compose.yml.huskybackup ]; then
-  echo "restoring backed up docker-compose.yml" 
-  cp docker-compose.yml.huskybackup docker-compose.yml || error_occurred=1
-fi
-
-if [ -e .env.huskybackup ]; then
-  echo "restoring backed up .env" 
-  cp .env.huskybackup .env || error_occurred=1
-fi
-
-if [ -e .env.secret.huskybackup ]; then
-  echo "restoring backed up .env.secret" 
-  cp .env.secret.huskybackup .env.secret || error_occurred=1
-fi
+restore_file docker-compose.yml ./
+restore_file .env ./
+restore_file .env.secret ./
+restore_file Dockerfile proxy/
+restore_file default.conf.template proxy/conf.d/templates/
+restore_file app.web.conf.template proxy/conf.d/templates/subdomains/
+restore_file api.web.conf.template proxy/conf.d/templates/subdomains/
+restore_file auth.web.conf.template proxy/conf.d/templates/subdomains/
+restore_file staticapp.web.conf.template proxy/conf.d/templates/subdomains/
+restore_file vault.web.conf.template proxy/conf.d/templates/subdomains/
 
 if [ $error_occurred -ne 0 ]; then
   echo "failed to run pre-commit checks"

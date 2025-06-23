@@ -1,27 +1,21 @@
 server {
-    listen 8080;
-    listen [::]:8080;
-    server_name ${PUBLIC_SERVER_DOMAIN} _;
+    listen          8080;
+    listen          [::]:8080;
+    server_name     ${API_WEB_SUBDOMAIN}.*;
 
     location /.well-known/acme-challenge/ {
-        root ${CERTBOT_DATA_PATH};
-    }
-
-    location /health {
-        access_log off;
-        return 200 '{"status":"UP"}';
-        add_header Content-Type application/json;
+            root ${CERTBOT_DATA_PATH};
     }
 
     location / {
-        return 302 https://$host$request_uri;
+        return 302 ${PUBLIC_API_WEB_ADDRESS}$request_uri;
     }
 }
 
 server {
-    listen 8443 ssl;  
-    listen [::]:8443 ssl;
-    server_name ${PUBLIC_SERVER_DOMAIN} _;
+    listen          8443 ssl;
+    listen          [::]:8443 ssl;
+    server_name     ${API_WEB_SUBDOMAIN}.*;
     ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
     ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
 
@@ -31,7 +25,7 @@ server {
 
     location / {
         resolver 127.0.0.11 valid=30s;
-        set $upstream_api "${PRIVATE_STATIC_APP_WEB_ADDRESS}";
+        set $upstream_api "${PRIVATE_API_WEB_ADDRESS}";
         proxy_pass  $upstream_api;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
@@ -40,9 +34,3 @@ server {
         proxy_set_header Host $http_host;
     }
 }
-
-include ./conf.d/subdomains/api.web.conf;
-include ./conf.d/subdomains/app.web.conf;
-include ./conf.d/subdomains/auth.web.conf;
-include ./conf.d/subdomains/staticapp.web.conf;
-include ./conf.d/subdomains/vault.web.conf;
