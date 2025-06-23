@@ -11,4 +11,4 @@ docker compose -f "${SCRIPT_DIR}/../docker-compose.yml" run --rm --entrypoint "\
     --no-eff-email" certbot
 
 echo "### Reloading nginx ..."
-docker-compose -f "${SCRIPT_DIR}/../docker-compose.yaml" exec gateway nginx -s reload
+docker-compose -f "${SCRIPT_DIR}/../docker-compose.yaml" exec proxy nginx -s reload

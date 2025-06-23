@@ -4,4 +4,4 @@ if [ "${ENV}" = "testcoverage" ]; then
     exit 0
 fi
 
-/usr/bin/curl -f http://localhost:80/health || exit 1
+/usr/bin/curl -f http://localhost:8080/health || exit 1

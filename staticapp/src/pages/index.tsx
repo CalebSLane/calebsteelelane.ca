@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Link, graphql, useStaticQuery } from 'gatsby';
 import type { HeadFC, PageProps } from 'gatsby';
 import 'purecss/build/pure-min.css';
@@ -11,67 +11,36 @@ import {
   faInfinity,
   faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
-import { GatsbyImage, getImage, StaticImage } from 'gatsby-plugin-image';
+import { StaticImage } from 'gatsby-plugin-image';
 import { FileNode } from 'gatsby-plugin-image/dist/src/components/hooks';
-import { faGithub, faInstagram, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import Game from './Game';
-
-type ImageFilesType = {
-  file: FileNode;
-};
+import Layout from './SplashLayout';
 
 const IndexPage: React.FC<PageProps> = ({ data }) => {
-  const [gameOn, setGameOn] = useState(false);
-  const developerImageData: ImageFilesType = useStaticQuery(graphql`
+  const files = useStaticQuery(graphql`
     query {
-      file(relativePath: { eq: "developer.jpg" }) {
-        childImageSharp {
-          gatsbyImageData(width: 300, placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
-        }
+      resume: file(relativePath: { eq: "CalebSteele-Lane-ResumeSoftware.pdf" }) {
+        publicURL
+        name
       }
     }
   `);
 
-  const developerImage = developerImageData?.file?.childImageSharp
-    ? getImage(developerImageData.file.childImageSharp)
-    : null;
-
   return (
-    <main>
-      <div className="header">
-        <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-          <a className="pure-menu-heading" href="">
-            <StaticImage
-              src="../images/logo.png"
-              alt="CSL Logo"
-              placeholder="blurred"
-              layout="fixed"
-              width={40}
-              height={40}
-            />
-          </a>
-        </div>
-      </div>
-
+    <Layout>
       <div className="splash-container">
         <div className="splash">
-          {gameOn && <Game />}
-          {!gameOn && (
-            <>
-              <p className="splash-subhead">Hello, my name is</p>
-              <h1 className="splash-head">Caleb Steele-Lane</h1>
-              <p className="splash-subhead">I am a software engineer and security consultant</p>
-            </>
-          )}
+          <p className="splash-subhead">Hello, my name is</p>
+          <h1 className="splash-head">Caleb Steele-Lane</h1>
+          <p className="splash-subhead">I am a software engineer and security consultant</p>
           <p>
-            <button
-              type="button"
+            <a
               className="pure-button pure-button-primary"
-              aria-label={gameOn ? 'Start "Game On"' : 'end "Game On"'}
-              onClick={() => setGameOn(!gameOn)}
+              aria-label="Download my resume"
+              href={files.resume.publicURL}
+              download
             >
-              {gameOn ? 'Stop Playing' : 'Wanna play a game?'}
-            </button>
+              Download Resume
+            </a>
           </p>
         </div>
       </div>
@@ -89,7 +58,7 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
                 I have a background in both front-end and back-end development using a range of
                 software languages and frameworks, but primarily Java, and Javascript. For a more
                 complete list of languages and frameworks, please see my{' '}
-                <Link to="/technology">Technology</Link> page.
+                <Link to="/Projects">Projects</Link> page.
               </p>
             </div>
             <div className="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
@@ -130,9 +99,12 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
 
         <div className="ribbon l-box-lrg pure-g">
           <div className="l-box-lrg is-center pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
-            {developerImage && (
-              <GatsbyImage image={developerImage} alt="Portrait of the developer" />
-            )}
+            <StaticImage
+              src="../images/developer.jpg"
+              placeholder="blurred"
+              height={300}
+              alt="Portrait of the developer"
+            />
           </div>
           <div className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
             <h2 className="content-head content-head-ribbon">
@@ -150,59 +122,16 @@ const IndexPage: React.FC<PageProps> = ({ data }) => {
             <p>I am also a self proclaimed comedian.</p>
           </div>
         </div>
-
-        <div className="content">
-          <h2 className="content-head is-center"></h2>
-
-          <div className="pure-g">
-            <div className="l-box-lrg pure-u-1 pure-u-md-2-5"></div>
-
-            <div className="l-box-lrg pure-u-1 pure-u-md-3-5">
-              <h4>Contact Me</h4>
-              <p>
-                If you have any questions, comments, feel free to reach out to me via email at{' '}
-                <a href="mailto:caleb@cleeb.ca">caleb@cleeb.ca</a> or via the below social media
-                links
-              </p>
-              <p className="socials">
-                <a
-                  href="https://www.linkedin.com/in/calebsteele-lane"
-                  target="_blank"
-                  aria-label="LinkedIn link"
-                >
-                  <FontAwesomeIcon
-                    className="socials-icon"
-                    icon={faLinkedin}
-                    aria-label="LinkedIn icon"
-                  />
-                </a>
-                <a href="https://github.com/CalebSLane" target="_blank" aria-label="GitHub link">
-                  <FontAwesomeIcon
-                    className="socials-icon"
-                    icon={faGithub}
-                    aria-label="GitHub icon"
-                  />
-                </a>
-                <a
-                  href="https://www.instagram.com/calebslane/"
-                  target="_blank"
-                  aria-label="Instagram link"
-                >
-                  <FontAwesomeIcon
-                    className="socials-icon"
-                    icon={faInstagram}
-                    aria-label="Instagram icon"
-                  />
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
-    </main>
+    </Layout>
   );
 };
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>CSL</title>;
+export const Head: HeadFC = () => (
+  <>
+    <title>CSL</title>
+    <html lang="en" />
+  </>
+);

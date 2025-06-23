@@ -37,6 +37,7 @@ x-build-args: &build-args
   PROJECT_NAME: ${PROJECT_NAME}
   ENV: ${ENV}
   ENABLE_GATSBY_REFRESH_ENDPOINT: ${ENABLE_GATSBY_REFRESH_ENDPOINT}
+  PUBLIC_STATIC_APP_WEB_ADDRESS: ${PUBLIC_STATIC_APP_WEB_ADDRESS}
   PUBLIC_APP_WEB_ADDRESS: ${PUBLIC_APP_WEB_ADDRESS}
   KC_DB_ARG: ${KC_DB}
   #KC_DB_DRIVER_ARG: ${KC_DB_DRIVER}
@@ -65,7 +66,7 @@ services:
       dockerfile: Dockerfile
       target: ${API_TARGET}
       args: *build-args
-    image: api:latest
+    # image: api:latest
     depends_on:
       vault.web.vault:
         condition: service_healthy
@@ -99,7 +100,7 @@ services:
       dockerfile: Dockerfile
       target: ${APP_TARGET}
       args: *build-args
-    image: app:latest
+    # image: app:latest
     depends_on:
       vault.web.vault:
         condition: service_healthy
@@ -144,7 +145,7 @@ services:
       dockerfile: Dockerfile
       target: ${STATIC_APP_TARGET}
       args: *build-args
-    image: staticapp:latest
+    # image: staticapp:latest
     depends_on:
       vault.web.vault:
         condition: service_healthy
@@ -177,7 +178,7 @@ services:
       dockerfile: Dockerfile
       target: ${AUTH_TARGET}
       args: *build-args
-    image: auth:latest
+    # image: auth:latest
     depends_on:
       vault.web.vault:
         condition: service_healthy
@@ -217,7 +218,7 @@ services:
       dockerfile: Dockerfile
       target: ${AUTHDB_TARGET}
       args: *build-args
-    image: authdb:latest
+    # image: authdb:latest
     depends_on:
       vault.web.vault:
         condition: service_healthy
@@ -250,7 +251,7 @@ services:
       dockerfile: Dockerfile
       target: ${VAULT_TARGET}
       args: *build-args
-    image: vault:latest
+    # image: vault:latest
     networks:
       - frontend
       - backend
@@ -273,20 +274,20 @@ services:
       dockerfile: Dockerfile
       target: ${PROXY_TARGET}
       args: *build-args
-    image: proxy:latest
+    # image: proxy:latest
     ports:
-      - ${NGINX_HTTP_PORT}:80
-      - ${NGINX_HTTPS_PORT}:443
+      - ${NGINX_HTTP_PORT}:8080
+      - ${NGINX_HTTPS_PORT}:8443
     networks:
       frontend:
         aliases:
           - proxy.web.${PUBLIC_SERVER_DOMAIN}
-          - app.web.${PUBLIC_SERVER_DOMAIN}
+        #  - app.web.${PUBLIC_SERVER_DOMAIN}  #dev
       backend:
-        aliases:
-          - api.web.${PUBLIC_SERVER_DOMAIN}
-          - auth.web.${PUBLIC_SERVER_DOMAIN}
-          - vault.web.${PUBLIC_SERVER_DOMAIN}
+        #aliases:
+        #  - api.web.${PUBLIC_SERVER_DOMAIN} # dev
+        #  - auth.web.${PUBLIC_SERVER_DOMAIN} # dev
+        #  - vault.web.${PUBLIC_SERVER_DOMAIN} # dev
     env_file: '.env'
     volumes:
       - type: tmpfs
@@ -313,11 +314,13 @@ services:
       dockerfile: Dockerfile
       target: ${CERTBOT_TARGET}
       args: *build-args
-    image: certbot:latest
+    # image: certbot:latest
     networks:
       - backend
     env_file: '.env'
     volumes:
+      - type: tmpfs
+        target: /var/lib/letsencrypt/
       - type: tmpfs
         target: /tmp
       - type: tmpfs

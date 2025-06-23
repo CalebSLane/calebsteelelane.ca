@@ -3,7 +3,11 @@ RUN apk add --no-cache curl
 WORKDIR /app
 RUN chown -R node:node /app
 COPY package*.json ./
+RUN mkdir -p /app/node_modules/
+RUN chown -R node:node /app/node_modules/
+USER node
 RUN --mount=type=cache,target=/root/.npm npm ci
+USER root
 COPY ./public ./public
 COPY ./src ./src
 RUN chown -R node:node /app/src/
