@@ -26,7 +26,7 @@ const codeStyles = {
 
 const NotFoundPage: React.FC<PageProps> = () => {
   return (
-    <main style={pageStyles}>
+    <main aria-label="404 page" style={pageStyles}>
       <h1 style={headingStyles}>Page not found - Dead Link</h1>
       <StaticImage
         src="../images/dangerLink.png"

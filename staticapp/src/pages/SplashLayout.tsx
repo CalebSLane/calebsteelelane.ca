@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
   return (
-    <main>
+    <div className="layout">
       <div id="home" className="header">
         <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
           <a className="pure-menu-heading" href="/">
@@ -21,14 +21,14 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
           </a>
           <ul className="pure-menu-list">
             <li
-              className={`pure-menu-item ${typeof window !== 'undefined' ? (window.location.pathname === '/' ? 'pure-menu-selected' : '') : ''}`}
+              className={`pure-menu-item ${window.location.pathname === '/' ? 'pure-menu-selected' : ''}`}
             >
               <Link to="/" className="pure-menu-link">
                 Home
               </Link>
             </li>
             <li
-              className={`pure-menu-item ${typeof window !== 'undefined' ? (window.location.pathname === '/Projects/' ? 'pure-menu-selected' : '') : ''}`}
+              className={`pure-menu-item ${window.location.pathname === '/Projects/' ? 'pure-menu-selected' : ''}`}
             >
               <Link to="/Projects" className="pure-menu-link">
                 Projects
@@ -37,7 +37,9 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
           </ul>
         </div>
       </div>
-      <div className="body">{props.children}</div>
+      <main aria-label="Main content">
+        <div className="body">{props.children}</div>
+      </main>
 
       <div className="footer l-box is-center">
         <p>
@@ -72,7 +74,7 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
           </span>
         </p>
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -5,7 +5,7 @@ import 'purecss/build/grids-responsive.css';
 import '../css/styles.css';
 
 const HealthPage: React.FC<PageProps> = ({ data }) => {
-  return <main></main>;
+  return <div></div>;
 };
 
 export default HealthPage;
