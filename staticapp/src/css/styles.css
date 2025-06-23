@@ -61,6 +61,9 @@ a:hover {
 .is-center {
   text-align: center;
 }
+.is-not-center {
+  text-align: left;
+}
 
 /*
  * -- PURE FORM STYLES --
@@ -107,11 +110,15 @@ a.pure-button-primary {
 
 .home-menu {
   padding: 0.5em;
-  text-align: center;
+  text-align: left;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-}
-.home-menu {
   background: var(--onyx);
+}
+
+/* We can align the menu header to the left, but float the
+    menu items to the right. */
+.home-menu ul {
+  float: right;
 }
 .pure-menu.pure-menu-fixed {
   /* Fixed menus normally have a border at the bottom. */
@@ -251,6 +258,9 @@ a.pure-button-primary {
 .content-subhead {
   color: var(--magenta);
 }
+.ribbon .content-subhead {
+  color: var(--blue);
+}
 .content-subhead i {
   margin-right: 7px;
 }
@@ -301,15 +311,6 @@ a.pure-button-primary {
   /* We increase the body font size */
   body {
     font-size: 16px;
-  }
-
-  /* We can align the menu header to the left, but float the
-    menu items to the right. */
-  .home-menu {
-    text-align: left;
-  }
-  .home-menu ul {
-    float: right;
   }
 
   /* We increase the height of the splash-container */

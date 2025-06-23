@@ -60,12 +60,13 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
           </div>
           <div className="content ribbon l-box-lrg pure-g">
             <div className="l-box-lrg is-center pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
-              <StaticImage
-                src="../images/thisWebsite.png"
-                alt="OpenELIS Logo"
-                placeholder="blurred"
-                height={300}
-              />
+              <iframe
+                src="/"
+                title="this website"
+                height="350"
+                width="350"
+                style={{ border: 'none', pointerEvents: 'none' }}
+              ></iframe>{' '}
             </div>
             <div className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
               <h2 className="content-head content-head-ribbon">
@@ -73,7 +74,7 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
                   src="../images/logo.png"
                   alt="this website logo"
                   placeholder="blurred"
-                  height={30}
+                  height={25}
                 />{' '}
                 This Website
               </h2>
