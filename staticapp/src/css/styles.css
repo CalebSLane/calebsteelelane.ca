@@ -6,6 +6,9 @@
 
 :root {
   --orange: #930;
+  --bright-orange: #c63;
+  --brighter-orange: #f96;
+  --deep-orange: #600;
   --silver: #ccc;
   --dark-silver: #999;
   --bright-silver: #eee;
@@ -148,7 +151,7 @@ a.pure-button-primary {
 
 .home-menu .pure-menu-selected a,
 .home-menu .pure-menu-selected a:visited {
-  color: var(--brighter-blue);
+  color: var(--bright-blue);
 }
 
 .home-menu a {
@@ -245,7 +248,7 @@ a.pure-button-primary {
 
 /* This is the class used for the main content headers (<h2>) */
 .content-head {
-  font-weight: 400;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 2em 0 1em;
@@ -262,10 +265,11 @@ a.pure-button-primary {
 
 /* This is the class used for the content sub-headers (<h3>) */
 .content-subhead {
+  font-weight: 500;
   color: var(--deep-magenta);
 }
 .ribbon .content-subhead {
-  color: var(--brighter-blue);
+  color: var(--orange);
 }
 .content-subhead i {
   margin-right: 7px;
