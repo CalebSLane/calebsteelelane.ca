@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, MouseEventHandler } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { isMobile } from 'react-device-detect';
 import { Link } from 'gatsby';
 import 'purecss/build/pure-min.css';
 import 'purecss/build/grids-responsive.css';
@@ -54,6 +55,7 @@ function getWindowSize() {
 
 const Game: React.FC = () => {
   const [windowSize, setWindowSize] = useState(getWindowSize());
+
   useEffect(() => {
     function handleWindowResize() {
       setWindowSize(getWindowSize());
@@ -66,11 +68,11 @@ const Game: React.FC = () => {
     }
   }, []);
 
-  let defaultSwordState = 'stolen';
-  let defaultGunState = 'available';
-  if (matchMedia('(pointer:fine)').matches) {
-    defaultSwordState = 'normal';
-    defaultGunState = 'unavailable';
+  let defaultSwordState = 'normal';
+  let defaultGunState = 'unavailable';
+  if (isMobile) {
+    defaultSwordState = 'stolen';
+    defaultGunState = 'available';
     // Device has a mouse
   }
 
