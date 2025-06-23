@@ -32,9 +32,7 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
                   Home
                 </Link>
               </li>
-              <li
-                className={`pure-menu-item ${pathNameEquals('/Projects/') ? 'pure-menu-selected' : ''}`}
-              >
+              <li className={`pure-menu-item `}>
                 <Link to="/Projects" className="pure-menu-link">
                   Projects
                 </Link>
