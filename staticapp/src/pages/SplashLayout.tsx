@@ -5,6 +5,12 @@ import { faGithub, faInstagram, faLinkedin } from '@fortawesome/free-brands-svg-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
+  function pathNameEquals(pathName: string) {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname === pathName;
+    }
+  }
+
   return (
     <div className="layout">
       <div id="home" className="header">
@@ -20,15 +26,13 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
             />
           </a>
           <ul className="pure-menu-list">
-            <li
-              className={`pure-menu-item ${(window !== undefined && window.location.pathname) === '/' ? 'pure-menu-selected' : ''}`}
-            >
+            <li className={`pure-menu-item ${pathNameEquals('/') ? 'pure-menu-selected' : ''}`}>
               <Link to="/" className="pure-menu-link">
                 Home
               </Link>
             </li>
             <li
-              className={`pure-menu-item ${(window !== undefined && window.location.pathname) === '/Projects/' ? 'pure-menu-selected' : ''}`}
+              className={`pure-menu-item ${pathNameEquals('/Projects/') ? 'pure-menu-selected' : ''}`}
             >
               <Link to="/Projects" className="pure-menu-link">
                 Projects
