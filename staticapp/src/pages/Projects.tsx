@@ -81,8 +81,8 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
               on. Some people would say it has been completely overengineered and underutilized.
               Some people would be absolutely correct to say so. This is a terrible example of a
               simple, cost effective website and would not be desireable as an end product for a
-              client looking to looking for such, BUT as a playground for me to learn and experiment
-              with new technologies and have fun in my spare time, it has been a great success.
+              client looking for such, BUT as a playground for me to learn and experiment with new
+              technologies and have fun in my spare time, it has been a great success.
             </p>
           </div>
           <div className="pure-g">

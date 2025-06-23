@@ -13,8 +13,13 @@ const mediumWindowThreshold = 768;
 const smallWindowThreshold = 580;
 const xSmallWindowThreshold = 300;
 
+const largeSpriteSize = 50;
+const mediumSpriteSize = 40;
+const smallSpriteSize = 35;
+const miniSpriteSize = 30;
+
 function getWindowSize() {
-  const gameSize = mediumWindowThreshold;
+  const gameSize = smallWindowThreshold;
   const windowSize = {
     gameSize: gameSize,
     innerWidth: 0,
@@ -29,11 +34,6 @@ function getWindowSize() {
     rightThirdGameXAxis: (gameSize / 3) * 2 + 15,
     leftGameXAxis: 0,
     rightGameXAxis: gameSize,
-
-    //can't use calulated values with gatsbyImage
-    largeSpriteSize: 60,
-    mediumSpriteSize: 50,
-    smallSpriteSize: 40,
   };
   if (typeof window !== 'undefined') {
     const { innerWidth, innerHeight } = window;
@@ -82,8 +82,8 @@ const Game: React.FC = () => {
     items: {
       magicBarrier: {
         status: 'active',
-        height: windowSize.largeSpriteSize,
-        width: windowSize.largeSpriteSize,
+        height: largeSpriteSize,
+        width: largeSpriteSize,
         location: {
           x: windowSize.middleGameXAxis,
           y: windowSize.upperGameYAxis,
@@ -105,14 +105,14 @@ const Game: React.FC = () => {
         status: defaultSwordState,
         location: {
           x: windowSize.middleGameXAxis,
-          y: windowSize.lowerGameYAxis - 50,
+          y: windowSize.lowerGameYAxis - smallSpriteSize,
         },
       },
       gun: {
         status: defaultGunState,
         location: {
           x: windowSize.middleGameXAxis,
-          y: windowSize.lowerGameYAxis - 50,
+          y: windowSize.lowerGameYAxis - smallSpriteSize,
         },
       },
     },
@@ -120,7 +120,7 @@ const Game: React.FC = () => {
       sage: {
         status: 'alive',
         alignment: 'good',
-        height: windowSize.mediumSpriteSize,
+        height: mediumSpriteSize,
         width: 40,
         location: {
           x: windowSize.middleGameXAxis,
@@ -130,7 +130,7 @@ const Game: React.FC = () => {
       link: {
         status: 'alive',
         alignment: 'good',
-        height: windowSize.mediumSpriteSize,
+        height: mediumSpriteSize,
         width: 40,
         location: {
           x: windowSize.middleGameXAxis,
@@ -140,7 +140,7 @@ const Game: React.FC = () => {
       fairy: {
         status: 'alive',
         alignment: 'good',
-        height: windowSize.smallSpriteSize,
+        height: smallSpriteSize,
         width: 30,
         location: {
           x: windowSize.leftThirdGameXAxis,
@@ -153,7 +153,7 @@ const Game: React.FC = () => {
       location: {
         x: windowSize.middleGameXAxis,
         y: windowSize.upperGameYAxis - 75,
-        height: windowSize.largeSpriteSize,
+        height: largeSpriteSize,
       },
     },
     //todo add events array and add events to it for sequence of game rules
@@ -471,7 +471,7 @@ const Game: React.FC = () => {
                 src="../images/dangerDanger.png"
                 alt="words to live by"
                 placeholder="blurred"
-                height={60}
+                height={largeSpriteSize}
               />
             </div>
             {gameState.items.sword.status !== 'stolen' && (
@@ -500,7 +500,7 @@ const Game: React.FC = () => {
                   src="../images/dangerSword.png"
                   alt="It's a dangerous gift"
                   placeholder="blurred"
-                  height={40}
+                  height={smallSpriteSize}
                   style={{
                     display: gameState.items.sword.status === 'normal' ? 'block' : 'none',
                   }}
@@ -509,7 +509,7 @@ const Game: React.FC = () => {
                   src="../images/dangerSwordRedHot.png"
                   alt="It's a dangerous gift"
                   placeholder="blurred"
-                  height={40}
+                  height={smallSpriteSize}
                   style={{
                     display: gameState.items.sword.status === 'redHot' ? 'block' : 'none',
                   }}
@@ -541,7 +541,7 @@ const Game: React.FC = () => {
                   src="../images/dangerReticle.png"
                   alt="point and click reticle"
                   placeholder="blurred"
-                  height={40}
+                  height={smallSpriteSize}
                   style={{
                     display: gameState.items.gun.status === 'active' ? 'block' : 'none',
                   }}
@@ -550,7 +550,7 @@ const Game: React.FC = () => {
                   src="../images/dangerGun.png"
                   alt="It's a very dangerous gift"
                   placeholder="blurred"
-                  height={40}
+                  height={smallSpriteSize}
                   style={{
                     display: gameState.items.gun.status === 'available' ? 'block' : 'none',
                   }}
@@ -573,7 +573,7 @@ const Game: React.FC = () => {
                 src="../images/dangerFire.png"
                 alt="Hot hot hot"
                 placeholder="blurred"
-                height={60}
+                height={largeSpriteSize}
               />
             </div>
             <div
@@ -591,7 +591,7 @@ const Game: React.FC = () => {
                 src="../images/dangerFire.png"
                 alt="Hot hot hot"
                 placeholder="blurred"
-                height={60}
+                height={largeSpriteSize}
               />
             </div>
 
@@ -616,7 +616,7 @@ const Game: React.FC = () => {
                 alt="an old man"
                 placeholder="blurred"
                 style={{ display: gameState.npcs.sage.status === 'alive' ? 'block' : 'none' }}
-                height={50}
+                height={mediumSpriteSize}
               />
               <StaticImage
                 src="../images/dangerSage.png"
@@ -624,7 +624,7 @@ const Game: React.FC = () => {
                 placeholder="blurred"
                 transformOptions={{ rotate: -90 }}
                 style={{ display: gameState.npcs.sage.status === 'dead' ? 'block' : 'none' }}
-                height={50}
+                height={mediumSpriteSize}
               />
             </div>
             <div
@@ -646,7 +646,7 @@ const Game: React.FC = () => {
                   src="../images/dangerLink.png"
                   alt="the hero of time"
                   placeholder="blurred"
-                  height={50}
+                  height={mediumSpriteSize}
                 />
               )}
               {gameState.npcs.link.status === 'dead' && (
@@ -660,7 +660,7 @@ const Game: React.FC = () => {
                     placeholder="blurred"
                     transformOptions={{ rotate: -90 }}
                     style={{ display: gameState.npcs.link.status === 'dead' ? 'block' : 'none' }}
-                    height={50}
+                    height={mediumSpriteSize}
                   />
                 </Link>
               )}
@@ -696,7 +696,7 @@ const Game: React.FC = () => {
                   src="../images/dangerFairy.png"
                   alt="Fairy of the Fountain"
                   placeholder="blurred"
-                  height={40}
+                  height={miniSpriteSize}
                   style={{
                     display:
                       gameState.npcs.link.status === 'dead' &&
@@ -710,7 +710,7 @@ const Game: React.FC = () => {
                   alt="Fairy - Dead"
                   placeholder="blurred"
                   transformOptions={{ rotate: -90 }}
-                  height={40}
+                  height={25}
                   style={{
                     display: gameState.npcs.fairy.status === 'dead' ? 'block' : 'none',
                   }}
@@ -719,7 +719,7 @@ const Game: React.FC = () => {
                   src="../images/dangerFire.png"
                   alt="Hot hot hot fairy"
                   placeholder="blurred"
-                  height={40}
+                  height={25}
                   style={{
                     display: gameState.npcs.fairy.status === 'onFire' ? 'block' : 'none',
                   }}
