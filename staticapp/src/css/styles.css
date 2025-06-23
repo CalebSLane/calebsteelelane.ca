@@ -17,6 +17,7 @@
   --brighter-blue: #9ff;
   --deep-blue: #369;
   --deeper-blue: #036;
+  --bright-magenta: #c6c;
   --magenta: #939;
   --deep-magenta: #606;
 }
@@ -42,7 +43,7 @@ label {
 }
 
 a:hover {
-  color: var(--magenta);
+  color: var(--bright-magenta);
 }
 
 .pure-img-responsive {
@@ -159,7 +160,7 @@ a.pure-button-primary {
 .home-menu li a:focus:visited {
   background: none;
   border: none;
-  color: var(--magenta);
+  color: var(--bright-magenta);
 }
 
 /*
@@ -300,11 +301,11 @@ a.pure-button-primary {
 .socials-icon {
   font-size: 30px;
   margin: 0em 0.5em 0em 0.5em;
-  color: var(--blue);
+  color: var(--bright-blue);
 }
 
 .socials-icon:hover {
-  color: var(--magenta);
+  color: var(--bright-magenta);
 }
 
 /*
