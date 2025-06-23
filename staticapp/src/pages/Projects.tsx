@@ -103,20 +103,18 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
                 <FontAwesomeIcon icon={faScrewdriverWrench} aria-label="user icon" />
                 &nbsp; Notable Work Done
               </h3>
-              <p>
-                <ul>
-                  <li>
-                    Hardened all dockerized services (rootless, reduced capabilities, minimal
-                    images, etc.)
-                  </li>
-                  <li>Centralized all 'sensitive information' in a secure vault</li>
-                  <li>Designed the project to be effective as a template for new webapps</li>
-                  <li>Integrated with Keycloak using Oauth 2</li>
-                  <li>Created helper script for easy deployment </li>
-                  <li>Centralized configuration for easy modification</li>
-                  <li>Husky scripts for formatting enforcement, protecting secrets, etc.</li>
-                </ul>
-              </p>
+              <ul>
+                <li>
+                  Hardened all dockerized services (rootless, reduced capabilities, minimal images,
+                  etc.)
+                </li>
+                <li>Centralized all 'sensitive information' in a secure vault</li>
+                <li>Designed the project to be effective as a template for new webapps</li>
+                <li>Integrated with Keycloak using Oauth 2</li>
+                <li>Created helper script for easy deployment </li>
+                <li>Centralized configuration for easy modification</li>
+                <li>Husky scripts for formatting enforcement, protecting secrets, etc.</li>
+              </ul>
             </div>
             <div className="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
               <h3 className="content-subhead">

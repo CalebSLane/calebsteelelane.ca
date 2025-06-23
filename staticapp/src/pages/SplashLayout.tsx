@@ -12,8 +12,8 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
   }
 
   return (
-    <div className="layout">
-      <div id="home" className="header">
+    <>
+      <header id="home" className="header">
         <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
           <a className="pure-menu-heading" href="/">
             <StaticImage
@@ -25,27 +25,29 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
               height={40}
             />
           </a>
-          <ul className="pure-menu-list">
-            <li className={`pure-menu-item ${pathNameEquals('/') ? 'pure-menu-selected' : ''}`}>
-              <Link to="/" className="pure-menu-link">
-                Home
-              </Link>
-            </li>
-            <li
-              className={`pure-menu-item ${pathNameEquals('/Projects/') ? 'pure-menu-selected' : ''}`}
-            >
-              <Link to="/Projects" className="pure-menu-link">
-                Projects
-              </Link>
-            </li>
-          </ul>
+          <nav style={{ position: 'absolute', top: 5 }} className="pure-menu pure-menu-horizontal">
+            <ul className="pure-menu-list">
+              <li className={`pure-menu-item ${pathNameEquals('/') ? 'pure-menu-selected' : ''}`}>
+                <Link to="/" className="pure-menu-link">
+                  Home
+                </Link>
+              </li>
+              <li
+                className={`pure-menu-item ${pathNameEquals('/Projects/') ? 'pure-menu-selected' : ''}`}
+              >
+                <Link to="/Projects" className="pure-menu-link">
+                  Projects
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
-      </div>
+      </header>
       <main aria-label="Main content">
         <div className="body">{props.children}</div>
       </main>
 
-      <div className="footer l-box is-center">
+      <footer className="footer l-box is-center">
         <p>
           If you have any questions, comments, feel free to reach out to me via email at{' '}
           <a href="mailto:caleb@cleeb.ca">caleb@cleeb.ca</a> or via the social media links
@@ -77,8 +79,8 @@ const Layout: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
             </a>
           </span>
         </p>
-      </div>
-    </div>
+      </footer>
+    </>
   );
 };
 
