@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, graphql, useStaticQuery } from 'gatsby';
 import type { HeadFC, PageProps } from 'gatsby';
 import 'purecss/build/pure-min.css';

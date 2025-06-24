@@ -24,6 +24,27 @@ type ImageFilesType = {
 
 const ProjectsPage: React.FC<PageProps> = ({ data }) => {
   const [gameOn, setGameOn] = useState(false);
+  const [buttonText, setButtonText] = useState('Wanna play a game?');
+  const [button, setButton] = useState<React.ReactNode>(null);
+
+  //load button with javascript so it is hiddento those without js enabled
+  useEffect(() => {
+    const text = gameOn ? 'Stop Playing' : 'Wanna play a game?';
+    setButton(renderGameOnButton(text));
+  }, [gameOn]);
+
+  function renderGameOnButton(text: string): React.ReactNode {
+    return (
+      <button
+        type="button"
+        className="pure-button pure-button-primary"
+        aria-label={gameOn ? 'Start "Game On"' : 'end "Game On"'}
+        onClick={() => setGameOn(!gameOn)}
+      >
+        {text}
+      </button>
+    );
+  }
 
   return (
     <Layout>
@@ -39,16 +60,7 @@ const ProjectsPage: React.FC<PageProps> = ({ data }) => {
               </p>
             </>
           )}
-          <p>
-            <button
-              type="button"
-              className="pure-button pure-button-primary"
-              aria-label={gameOn ? 'Start "Game On"' : 'end "Game On"'}
-              onClick={() => setGameOn(!gameOn)}
-            >
-              {gameOn ? 'Stop Playing' : 'Wanna play a game?'}
-            </button>
-          </p>
+          <p>{button}</p>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import { IGatsbyImageData } from 'gatsby-plugin-image';
 import { useSiteMetadata } from '../hooks/use-site-metadata';
 import React from 'react';
+import { config, dom } from '@fortawesome/fontawesome-svg-core';
 
 type SEOProps = {
   title?: string;
@@ -35,6 +36,15 @@ export const SEO: React.FC<SEOProps> = ({
     url: `${siteUrl}${pathname || ``}`,
   };
 
+  // this is so if no js is used fontawesome icons aren't giant
+  config.autoAddCss = false;
+  function getStyleTags() {
+    if (typeof dom === 'undefined') {
+      return null;
+    }
+    return <style>{dom.css()}</style>;
+  }
+
   return (
     <>
       <html lang="en" />
@@ -51,6 +61,7 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:description" content={seo.description} />
       <meta name="twitter:image" content={seo.imagePath} />
+      {getStyleTags()}
       {/* <link rel="icon" href={seo.imagePath} /> */}
       {children}
     </>
