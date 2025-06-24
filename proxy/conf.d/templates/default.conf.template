@@ -24,6 +24,7 @@ server {
     server_name ${PUBLIC_SERVER_DOMAIN} _;
     ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
     ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     location /.well-known/acme-challenge/ {
         root ${CERTBOT_DATA_PATH};

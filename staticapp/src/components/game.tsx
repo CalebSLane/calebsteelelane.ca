@@ -403,9 +403,11 @@ const Game: React.FC = () => {
       gameState.npcs.fairy.location.y - gameState.npcs.fairy.height / 2 <
         gameState.items.gun.location.y
     ) {
-      setGameState(draft => {
-        draft.npcs.fairy.status = 'dead';
-      });
+      if (gameState.npcs.fairy.status === 'alive') {
+        setGameState(draft => {
+          draft.npcs.fairy.status = 'dead';
+        });
+      }
     }
     if (
       gameState.npcs.sage.location.x + gameState.npcs.sage.width / 2 >
