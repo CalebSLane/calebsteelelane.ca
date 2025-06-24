@@ -21,7 +21,7 @@ export default [
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   {
-    files: ['app/**'],
+    files: ['app/**', 'staticapp/**'],
     ...pluginReact.configs.flat.recommended,
   },
   {
