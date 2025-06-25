@@ -1,16 +1,67 @@
+#security features
+server_tokens               off;
+add_header                  Strict-Transport-Security "max-age=15768000" always;
+add_header                  X-Content-Type-Options "nosniff" always;
+add_header                  X-Frame-Options "SAMEORIGIN" always;
+add_header                  X-Xss-Protection "1; mode=block" always;
+add_header                  Referrer-Policy strict-origin-when-cross-origin;
+add_header                  Feature-policy
+  "accelerometer 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'";
+add_header                  Content-Security-Policy
+  "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+client_body_buffer_size     1K;
+client_header_buffer_size   1k;
+client_max_body_size        1k;
+large_client_header_buffers 2 1k;
+client_body_timeout         10;
+client_header_timeout       10;
+send_timeout                10;
+limit_req_zone              $binary_remote_addr zone=req_per_ip:10m rate=50r/s;
+limit_req                   zone=req_per_ip burst=50;
+limit_req_status            429;
+limit_conn_zone             $binary_remote_addr zone=conn_per_id:10m;
+limit_conn                  conn_per_id 5;
+ssl_certificate             ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
+ssl_certificate_key         ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
+add_header                  Strict-Transport-Security
+  "max-age=31536000; includeSubDomains" always;
+
+#default server to reject requests to prevent bot scanning
 server {
-    listen 8080;
-    listen [::]:8080;
-    server_name ${PUBLIC_SERVER_DOMAIN} _;
+    listen      8443 default_server;
+    listen      [::]:8443 default_server;
+    server_name _ return 444;
+}
+#default server to reject requests to prevent bot scanning
+server {
+    listen      8080 ssl default_server;
+    listen      [::]:8080 ssl default_server;
+    server_name _ return 444;
+}
+
+server {
+    listen      8080;
+    listen      [::]:8080;
+    server_name ${PUBLIC_SERVER_DOMAIN} localhost;
 
     location /.well-known/acme-challenge/ {
         root ${CERTBOT_DATA_PATH};
+
+        #limit available methods
+        if ($request_method !~ ^(GET)$ ) {
+            return 444;
+        }
     }
 
     location /health {
         access_log off;
-        return 200 '{"status":"UP"}';
+        return     200 '{"status":"UP"}';
         add_header Content-Type application/json;
+
+        #limit available methods
+        if ($request_method !~ ^(GET)$ ) {
+            return 444;
+        }
     }
 
     location / {
@@ -19,21 +70,45 @@ server {
 }
 
 server {
-    listen 8443 ssl;  
-    listen [::]:8443 ssl;
-    server_name ${PUBLIC_SERVER_DOMAIN} _;
-    ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
-    ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    listen      8443 ssl;
+    listen      [::]:8443 ssl;
+    server_name ${PUBLIC_SERVER_DOMAIN} localhost;
+
+    #deny user-agents common to bots
+    if ($http_user_agent ~* LWP::Simple|BBBike|wget) {
+        return 403;
+    }
+
+    #deny user-agents common to scanners
+    if ($http_user_agent ~* msnbot|scrapbot) {
+        return 403;
+    }
+
+    #deny referral spam
+    if ( $http_referer ~*
+      (babes|forsale|girl|jewelry|love|nudity|organic|poker|porn|sex|teen) ) {
+        return 403;
+    }
 
     location /.well-known/acme-challenge/ {
         root ${CERTBOT_DATA_PATH};
+
+        #limit available methods
+        if ($request_method !~ ^(GET)$ ) {
+            return 444;
+        }
     }
 
     location / {
-        resolver 127.0.0.11 valid=30s;
-        set $upstream_api "${PRIVATE_STATIC_APP_WEB_ADDRESS}";
-        proxy_pass  $upstream_api;
+        #limit available methods
+        if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+            return 444;
+        }
+
+        resolver         127.0.0.11 valid=30s;
+        set              $upstream_staticapp
+          "${PRIVATE_STATIC_APP_WEB_ADDRESS}";
+        proxy_pass       $upstream_staticapp;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Port $server_port;
@@ -42,8 +117,8 @@ server {
     }
 }
 
-include ./conf.d/subdomains/api.web.conf;
-include ./conf.d/subdomains/app.web.conf;
-include ./conf.d/subdomains/auth.web.conf;
-include ./conf.d/subdomains/staticapp.web.conf;
-include ./conf.d/subdomains/vault.web.conf;
+include                     ./conf.d/subdomains/api.web.conf;
+include                     ./conf.d/subdomains/app.web.conf;
+include                     ./conf.d/subdomains/auth.web.conf;
+include                     ./conf.d/subdomains/staticapp.web.conf;
+include                     ./conf.d/subdomains/vault.web.conf;

@@ -14,7 +14,16 @@ RUN mkdir -p "/var/www/certbot" \
     && chown -R nginx_user:nginx_group "/var/www/certbot" \
     && chown -R nginx_user:nginx_group "/etc/letsencrypt"
 COPY conf.d/templates/default.conf.template /etc/nginx/templates/default.conf.template
-COPY conf.d/templates/subdomains /etc/nginx/templates/subdomains
+COPY conf.d/templates/subdomains/app.web.conf.template /etc/nginx/templates/subdomains/app.web.conf.template
+COPY conf.d/templates/subdomains/api.web.conf.template /etc/nginx/templates/subdomains/api.web.conf.template
+COPY conf.d/templates/subdomains/auth.web.conf.template /etc/nginx/templates/subdomains/auth.web.conf.template
+COPY conf.d/templates/subdomains/staticapp.web.conf.template /etc/nginx/templates/subdomains/staticapp.web.conf.template
+COPY conf.d/templates/subdomains/vault.web.conf.template /etc/nginx/templates/subdomains/vault.web.conf.template    
+# COPY conf.d/templates/subdomains/${APP_WEB_SUBDOMAIN}.conf.template /etc/nginx/templates/subdomains/${APP_WEB_SUBDOMAIN}.conf.template
+# COPY conf.d/templates/subdomains/${API_WEB_SUBDOMAIN}.conf.template /etc/nginx/templates/subdomains/${API_WEB_SUBDOMAIN}.conf.template
+# COPY conf.d/templates/subdomains/${AUTH_WEB_SUBDOMAIN}.conf.template /etc/nginx/templates/subdomains/${AUTH_WEB_SUBDOMAIN}.conf.template
+# COPY conf.d/templates/subdomains/${STATIC_APP_WEB_SUBDOMAIN}.conf.template /etc/nginx/templates/subdomains/${STATIC_APP_WEB_SUBDOMAIN}.conf.template
+# COPY conf.d/templates/subdomains/${VAULT_WEB_SUBDOMAIN}.conf.template /etc/nginx/templates/subdomains/${VAULT_WEB_SUBDOMAIN}.conf.template
 COPY proxy-healthcheck.sh /healthcheck.sh
 RUN chown -R nginx_user:nginx_group /etc/nginx/conf.d
 RUN chown -R nginx_user:nginx_group /etc/nginx/templates

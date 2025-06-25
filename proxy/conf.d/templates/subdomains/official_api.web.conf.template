@@ -1,10 +1,14 @@
 server {
-    listen          8080;
-    listen          [::]:8080;
-    server_name     ${API_WEB_SUBDOMAIN}.*;
+    listen      8080;
+    listen      [::]:8080;
+    server_name ${API_WEB_SUBDOMAIN}.*;
 
     location /.well-known/acme-challenge/ {
-            root ${CERTBOT_DATA_PATH};
+        if ($request_method !~ ^(GET)$ ) {
+            return 444;
+        }
+
+        root ${CERTBOT_DATA_PATH};
     }
 
     location / {
@@ -13,20 +17,44 @@ server {
 }
 
 server {
-    listen          8443 ssl;
-    listen          [::]:8443 ssl;
-    server_name     ${API_WEB_SUBDOMAIN}.*;
-    ssl_certificate ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/fullchain.pem;
-    ssl_certificate_key ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privkey.pem;
+    listen      8443 ssl;
+    listen      [::]:8443 ssl;
+    server_name ${API_WEB_SUBDOMAIN}.*;
+
+    #deny user-agents common to bots
+    if ($http_user_agent ~* LWP::Simple|BBBike|wget) {
+        return 403;
+    }
+
+    #deny user-agents common to scanners
+    if ($http_user_agent ~* msnbot|scrapbot) {
+        return 403;
+    }
+
+    #deny referral spam
+    if ( $http_referer ~*
+      (babes|forsale|girl|jewelry|love|nudity|organic|poker|porn|sex|teen) ) {
+        return 403;
+    }
 
     location /.well-known/acme-challenge/ {
         root ${CERTBOT_DATA_PATH};
+
+        #limit available methods
+        if ($request_method !~ ^(GET)$ ) {
+            return 444;
+        }
     }
 
     location / {
-        resolver 127.0.0.11 valid=30s;
-        set $upstream_api "${PRIVATE_API_WEB_ADDRESS}";
-        proxy_pass  $upstream_api;
+        #limit available methods
+        if ($request_method !~ ^(GET|HEAD|POST|PUT|DELETE)$ ) {
+            return 444;
+        }
+
+        resolver         127.0.0.11 valid=30s;
+        set              $upstream_api "${PRIVATE_API_WEB_ADDRESS}";
+        proxy_pass       $upstream_api;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Port $server_port;
