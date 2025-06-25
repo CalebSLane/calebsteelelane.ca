@@ -51,6 +51,7 @@ COPY --from=ubi-micro-build /mnt/rootfs /
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 COPY ./auth-entrypoint.sh /auth-entrypoint.sh
 COPY ./auth-healthcheck.sh /healthcheck.sh
+COPY ./realms /opt/keycloak/data/import
 USER keycloak
 CMD [ "start-dev", "--import-realm", "--optimized" ]
 ENTRYPOINT ["/auth-entrypoint.sh"]
