@@ -26,16 +26,18 @@ ssl_certificate_key         ${CERT_ROOT_PATH}/live/${PUBLIC_SERVER_DOMAIN}/privk
 add_header                  Strict-Transport-Security
   "max-age=31536000; includeSubDomains" always;
 
+
 #default server to reject requests to prevent bot scanning
 server {
-    listen      8443 default_server;
-    listen      [::]:8443 default_server;
+    listen      8080 default_server;
+    listen      [::]:8080 default_server;
     server_name _ return 444;
 }
+
 #default server to reject requests to prevent bot scanning
 server {
-    listen      8080 ssl default_server;
-    listen      [::]:8080 ssl default_server;
+    listen      8443 ssl default_server;
+    listen      [::]:8443 ssl default_server;
     server_name _ return 444;
 }
 
@@ -54,14 +56,13 @@ server {
     }
 
     location /health {
-        access_log off;
-        return     200 '{"status":"UP"}';
-        add_header Content-Type application/json;
-
         #limit available methods
         if ($request_method !~ ^(GET)$ ) {
             return 444;
         }
+        access_log off;
+        return     200 '{"status":"UP"}';
+        add_header Content-Type application/json;
     }
 
     location / {
