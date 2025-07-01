@@ -32,6 +32,7 @@ x-security: &security
   pull_policy: always
   privileged: false
   init: true
+  restart: always
 
 x-build-args: &build-args
   PROJECT_NAME: ${PROJECT_NAME}
